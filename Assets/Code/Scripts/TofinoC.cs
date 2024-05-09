@@ -27,10 +27,10 @@ public class Tofino
             return "F";
 
         }
-        else if(linea.Contains("Tofino System") ||linea.Contains("Logger"))
+        else if(linea.Contains("Tofino System") || linea.Contains("Logger"))
         {
 
-            return "TF";
+            return "TS";
 
         }
         else
