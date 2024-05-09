@@ -43,14 +43,6 @@ public class Filtro : MonoBehaviour
 
     }
 
-    void NewFile(string ruta)
-    {
-
-        writer.Close();
-        writer = new StreamWriter(ruta);
-
-    }
-
     void Start()
     {
         
@@ -59,8 +51,11 @@ public class Filtro : MonoBehaviour
         string rutaR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt";
         reader = new StreamReader(rutaR);
 
+        writer = new StreamWriter(Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt");
 
     }
+
+    string rutaAnt = "";
 
     void Update()
     {
@@ -80,7 +75,16 @@ public class Filtro : MonoBehaviour
             string type = tofino.MsgType(linea);
             
             string ruta = rutaWLog(type);
+
+            writer.Close();
+            writer = new StreamWriter(ruta, true);
+
+            rutaAnt = ruta;
+
+            writer.WriteLine(linea);
+            Debug.Log(linea);
             Debug.Log(ruta);
+
         }
 
     }
