@@ -38,7 +38,6 @@ public class Filtro : MonoBehaviour
                 break;
 
         }
-
         return rutaW;
 
     }
