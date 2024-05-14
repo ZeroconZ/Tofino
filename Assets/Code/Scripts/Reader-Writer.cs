@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class Filtro : MonoBehaviour
+public class RW : MonoBehaviour
 {
     
     Tofino tofino;
@@ -38,6 +38,7 @@ public class Filtro : MonoBehaviour
                 break;
 
         }
+        
         return rutaW;
 
     }
@@ -50,7 +51,7 @@ public class Filtro : MonoBehaviour
         string rutaR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt";
         reader = new StreamReader(rutaR);
 
-        writer = new StreamWriter(Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt");
+        writer = new StreamWriter(Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt", true);
 
     }
 
@@ -62,7 +63,7 @@ public class Filtro : MonoBehaviour
         if(reader == null)
         {
 
-            Debug.Log("No va");
+            Debug.Log("Se han cometido errores");
             return;
 
         }
@@ -75,14 +76,23 @@ public class Filtro : MonoBehaviour
             
             string ruta = rutaWLog(type);
 
-            writer.Close();
-            writer = new StreamWriter(ruta, true);
+            if(ruta != rutaAnt)
+            {
+
+                writer.Close();
+                writer = new StreamWriter(ruta, true);
+                writer.WriteLine(linea);
+
+            }
+            else
+            {
+
+                writer.WriteLine(linea);
+
+            }
+
 
             rutaAnt = ruta;
-
-            writer.WriteLine(linea);
-            Debug.Log(linea);
-            Debug.Log(ruta);
 
         }
 
@@ -92,6 +102,8 @@ public class Filtro : MonoBehaviour
     {
 
         reader.Close();
+        writer.Close();
 
     }
+
 }
