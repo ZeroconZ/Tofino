@@ -13,24 +13,24 @@ public class RW : MonoBehaviour
     string rutaWLog(string type)
     {
 
-        string rutaW = "";
+        string pathW = "";
 
         switch (type)
         {
 
             case "F":
 
-                rutaW = Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt";
+                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt";
                 break;
 
             case "E":
 
-                rutaW = Application.dataPath + "/Docs" + "/Logs" + "/logsEnforcer.txt";
+                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsEnforcer.txt";
                 break;
             
             case "TS":
 
-                rutaW = Application.dataPath + "/Docs" + "/Logs" + "/logsSystem.txt";
+                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsSystem.txt";
                 break;
 
             default:
@@ -39,7 +39,7 @@ public class RW : MonoBehaviour
 
         }
         
-        return rutaW;
+        return pathW;
 
     }
 
@@ -48,14 +48,14 @@ public class RW : MonoBehaviour
         
         tofino = new Tofino();
 
-        string rutaR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt";
-        reader = new StreamReader(rutaR);
+        string pathR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt";
+        reader = new StreamReader(pathR);
 
         writer = new StreamWriter(Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt", true);
 
     }
 
-    string rutaAnt = "";
+    string prevPath = "";
 
     void Update()
     {
@@ -71,28 +71,28 @@ public class RW : MonoBehaviour
         if(!reader.EndOfStream)
         {
 
-            string linea = reader.ReadLine();
-            string type = tofino.MsgType(linea);
+            string line = reader.ReadLine();
+            string type = tofino.MsgType(line);
             
-            string ruta = rutaWLog(type);
+            string path = rutaWLog(type);
 
-            if(ruta != rutaAnt)
+            if(path != prevPath)
             {
 
                 writer.Close();
-                writer = new StreamWriter(ruta, true);
-                writer.WriteLine(linea);
+                writer = new StreamWriter(path, true);
+                writer.WriteLine(line);
 
             }
             else
             {
 
-                writer.WriteLine(linea);
+                writer.WriteLine(line);
 
             }
 
-
-            rutaAnt = ruta;
+            EventVis.instance.newLog(line);
+            prevPath = path;
 
         }
 
