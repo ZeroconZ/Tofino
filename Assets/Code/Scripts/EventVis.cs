@@ -6,12 +6,18 @@ using UnityEngine.UIElements;
 using TMPro;
 using System.IO;
 using UnityEditor;
+using System.Text;
 
 public class EventVis : MonoBehaviour
 {
 
+    [SerializeField] private int queue = 10;
+
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
+    private Queue<string> logQueue = new Queue<string>();
+    private StringBuilder logPrinter = new StringBuilder();
+
 
     void Awake()
     {
@@ -24,10 +30,24 @@ public class EventVis : MonoBehaviour
 
     }
 
+    void Start()
+    {
+
+    }
+
     public void newLog(string line)
     {
 
-        TextOnS.text = line + "\n" + "\n" + TextOnS.text;
+        if(logQueue.Count > queue)
+        {
+
+            logQueue.Clear();
+
+        }
+        
+        logQueue.Enqueue(line);
+
+        TextOnS.text = string.Join("\n", logQueue.ToArray());
 
     }
 

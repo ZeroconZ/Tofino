@@ -3,107 +3,109 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class RW : MonoBehaviour
+public class LargeFileProcessor : MonoBehaviour
 {
-    
-    Tofino tofino;
-    StreamReader reader;
-    StreamWriter writer;
+    public string sourceFilePath = "path/to/large/file.txt";
+    public string destinationFolderPath = "path/to/destination/folder";
+    public int blockSize = 4096; // Tamaño del bloque de lectura en bytes
+    public int batchWriteSize = 1000; // Número de líneas para escribir en un lote
 
-    string rutaWLog(string type)
-    {
-
-        string pathW = "";
-
-        switch (type)
-        {
-
-            case "F":
-
-                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt";
-                break;
-
-            case "E":
-
-                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsEnforcer.txt";
-                break;
-            
-            case "TS":
-
-                pathW = Application.dataPath + "/Docs" + "/Logs" + "/logsSystem.txt";
-                break;
-
-            default:
-
-                break;
-
-        }
-        
-        return pathW;
-
-    }
+    private StreamReader reader;
+    private StreamWriter[] writers;
 
     void Start()
     {
-        
-        tofino = new Tofino();
+        // Abre el archivo de origen para lectura
+        reader = new StreamReader(sourceFilePath);
 
-        string pathR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt";
-        reader = new StreamReader(pathR);
+        // Inicializa los escritores para los archivos de destino
+        writers = new StreamWriter[3];
+        writers[0] = new StreamWriter(Path.Combine(destinationFolderPath, "logsFirewall.txt"), true);
+        writers[1] = new StreamWriter(Path.Combine(destinationFolderPath, "logsEnforcer.txt"), true);
+        writers[2] = new StreamWriter(Path.Combine(destinationFolderPath, "logsSystem.txt"), true);
 
-        writer = new StreamWriter(Application.dataPath + "/Docs" + "/Logs" + "/logsFirewall.txt", true);
-
+        // Inicia el proceso de lectura
+        StartCoroutine(ProcessLargeFile());
     }
 
-    string prevPath = "";
-
-    void Update()
+    IEnumerator ProcessLargeFile()
     {
-        
-        if(reader == null)
+        char[] buffer = new char[blockSize];
+
+        while (!reader.EndOfStream)
         {
+            // Lee un bloque del archivo de origen
+            int bytesRead = reader.ReadBlock(buffer, 0, blockSize);
 
-            Debug.Log("Se han cometido errores");
-            return;
+            // Convierte el bloque en líneas
+            string blockContent = new string(buffer, 0, bytesRead);
+            string[] lines = blockContent.Split('\n');
 
-        }
-
-        if(!reader.EndOfStream)
-        {
-
-            string line = reader.ReadLine();
-            string type = tofino.MsgType(line);
-            
-            string path = rutaWLog(type);
-
-            if(path != prevPath)
+            foreach (string line in lines)
             {
+                // Determina el tipo de mensaje y obtén el índice del escritor correspondiente
+                string messageType = MessageType(line);
+                int writerIndex = GetWriterIndex(messageType);
 
-                writer.Close();
-                writer = new StreamWriter(path, true);
-                writer.WriteLine(line);
+                // Escribe la línea en el archivo correspondiente
+                writers[writerIndex].WriteLine(line);
 
-            }
-            else
-            {
-
-                writer.WriteLine(line);
-
+                // Si se ha alcanzado el tamaño del lote, escribe los lotes en los archivos y libera memoria
+                if (writers[writerIndex].BaseStream.Position >= batchWriteSize)
+                {
+                    writers[writerIndex].Flush();
+                }
             }
 
-            EventVis.instance.newLog(line);
-            prevPath = path;
-
+            yield return null; // Espera hasta el siguiente frame para continuar la iteración
         }
 
+        // Cierra los archivos y libera recursos al finalizar la lectura
+        CloseFiles();
     }
 
-    void OnDestroy()
+    private string MessageType(string line)
+    {
+        // Aquí implementa tu lógica para determinar el tipo de mensaje (ejemplo simplificado)
+        // Supongamos que cada mensaje contiene un prefijo que indica su tipo
+        if (line.StartsWith("[Firewall]"))
+        {
+            return "F";
+        }
+        else if (line.StartsWith("[Enforcer]"))
+        {
+            return "E";
+        }
+        else
+        {
+            return "TS";
+        }
+    }
+
+    private int GetWriterIndex(string messageType)
+    {
+        // Retorna el índice del escritor correspondiente según el tipo de mensaje
+        switch (messageType)
+        {
+            case "F":
+                return 0;
+            case "E":
+                return 1;
+            default:
+                return 2;
+        }
+    }
+
+    private void CloseFiles()
     {
 
+        // Cierra los archivos y libera recursos
         reader.Close();
-        writer.Close();
+        foreach (StreamWriter writer in writers)
+        {
+            writer.Close();
+        }
 
     }
-
 }
+
