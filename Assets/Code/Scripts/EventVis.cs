@@ -11,12 +11,10 @@ using System.Text;
 public class EventVis : MonoBehaviour
 {
 
-    [SerializeField] private int queue = 10;
 
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
-    private Queue<string> logQueue = new Queue<string>();
-    private StringBuilder logPrinter = new StringBuilder();
+    StringBuilder lineConc = new StringBuilder();
 
 
     void Awake()
@@ -28,26 +26,12 @@ public class EventVis : MonoBehaviour
         else 
             DestroyImmediate(gameObject);
 
-    }
-
-    void Start()
-    {
-
-    }
+    }   
 
     public void newLog(string line)
     {
 
-        if(logQueue.Count > queue)
-        {
-
-            logQueue.Clear();
-
-        }
-        
-        logQueue.Enqueue(line);
-
-        TextOnS.text = string.Join("\n", logQueue.ToArray());
+        TextOnS.text = TextOnS.text + line;
 
     }
 
