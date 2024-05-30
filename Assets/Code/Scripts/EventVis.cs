@@ -11,11 +11,13 @@ using System.Text;
 public class EventVis : MonoBehaviour
 {
 
-
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
-    StringBuilder lineConc = new StringBuilder();
+    StringBuilder logLineConc = new StringBuilder();
 
+    private const float updInterv = 0.5f;
+    private float lastUpd = 0f;
+    private string logLine;
 
     void Awake()
     {
@@ -28,10 +30,34 @@ public class EventVis : MonoBehaviour
 
     }   
 
-    public void newLog(string line)
+    void Update()
     {
 
-        TextOnS.text = TextOnS.text + line;
+        lastUpd += Time.deltaTime;
+
+        if(lastUpd >= updInterv)
+        {
+            
+            updText();
+            lastUpd = 0f;
+            logLine = "";
+
+        }
+
+    }
+
+    public void newLog(string line)
+    {
+         
+        logLine = line;
+        logLineConc.Append(line);
+
+    }
+
+    private void updText()
+    {
+
+        TextOnS.text = TextOnS.text + logLine;
 
     }
 

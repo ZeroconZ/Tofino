@@ -13,6 +13,13 @@ public class RW : MonoBehaviour
 
     [SerializeField] private int readLines = 4;
 
+    public static class readerEnd
+    {
+
+        public static bool finished = false;
+
+    }
+
     void Start()
     {
 
@@ -58,6 +65,12 @@ public class RW : MonoBehaviour
             Debug.Log(lineConc);
             lineConc.Clear();
 
+        }
+
+        if(reader.EndOfStream)
+        {
+            readerEnd.finished = true;
+            Debug.Log("Ya acabé");
         }
 
     }

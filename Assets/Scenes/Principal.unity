@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -536,7 +536,6 @@ GameObject:
   - component: {fileID: 681223359}
   - component: {fileID: 681223358}
   - component: {fileID: 681223357}
-  - component: {fileID: 681223360}
   - component: {fileID: 681223361}
   m_Layer: 5
   m_Name: Scroll View
@@ -634,18 +633,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 681223355}
   m_CullTransparentMesh: 1
---- !u!114 &681223360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681223355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a88897e750d69c4d8a18a47e10111af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &681223361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1180,7 +1167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c0c9a8cfd5df849aed8f3722cb6873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readLines: 10
+  readLines: 2
 --- !u!1 &1601667627
 GameObject:
   m_ObjectHideFlags: 0
