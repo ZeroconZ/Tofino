@@ -8,22 +8,21 @@ using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventVis : MonoBehaviour
+public class MMO : MonoBehaviour
 {
-
-    public static EventVis instance;
-    public TextMeshProUGUI TextOnS;
-    StringBuilder logLineConc = new StringBuilder();
+    
+    public static MMO instance;
+    public TextMeshProUGUI ModeDisplay;
 
     private const float updInterv = 0.5f;
     private float lastUpd = 0f;
-    private string logLine;
+    private string tofinoMode;
 
     void Awake()
     {
 
-        if(EventVis.instance == null)
-            EventVis.instance = this;
+        if(MMO.instance == null)
+            MMO.instance = this;
 
         else 
             DestroyImmediate(gameObject);
@@ -38,27 +37,24 @@ public class EventVis : MonoBehaviour
         if(lastUpd >= updInterv)
         {
             
-            updText();
+            updMode();
             lastUpd = 0f;
-            logLine = "";
 
         }
 
     }
 
-    public void newLog(string line)
+    public void newMode(string mode)
     {
-         
-        logLine = line;
-        logLineConc.Append(line);
+
+        tofinoMode = mode;
 
     }
 
-    private void updText()
+    public void updMode()
     {
 
-        TextOnS.text = TextOnS.text + logLine;
+        ModeDisplay.text = "Estado: " + tofinoMode;
 
     }
-
 }

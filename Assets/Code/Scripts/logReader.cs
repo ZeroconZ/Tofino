@@ -8,10 +8,12 @@ using System.Text;
 public class RW : MonoBehaviour
 {
     
+    LogProcessor logProcessor = new LogProcessor();
+    
     StreamReader reader;
     StringBuilder lineConc = new StringBuilder();
 
-    [SerializeField] private int readLines = 4;
+    [SerializeField] private int readLines = 1;
 
     public static class readerEnd
     {
@@ -25,6 +27,11 @@ public class RW : MonoBehaviour
 
         string pathR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt"; 
         reader = new StreamReader(pathR);
+
+        string line = reader.ReadLine();
+        string mode = logProcessor.TofinoMode(line);
+
+        MMO.instance.newMode(mode);
 
         LogReader().ContinueWith(Task =>
         {
@@ -47,8 +54,9 @@ public class RW : MonoBehaviour
         {
             
             string line;
+            string mode;
 
-            for(int i = 0; i <= readLines; i++)
+            for(int i = 0; i < readLines; i++)
             {
 
                 line = await reader.ReadLineAsync();
@@ -56,21 +64,34 @@ public class RW : MonoBehaviour
                 if(line == null)
                     break;
                 
+                lineConc.Append(logProcessor.lineProcesser(line));
+                line = lineConc.ToString();
 
-                lineConc.Append(line + "\n");
+                if(logProcessor.TofinoModeChange(line) == true)
+                {
+
+                    mode = logProcessor.TofinoMode(line);
+                    MMO.instance.newMode(mode);
+
+                }
+
+                
+
+
 
             }
-
+            
             EventVis.instance.newLog(lineConc.ToString());
-            Debug.Log(lineConc);
+            Debug.Log(lineConc.ToString());
             lineConc.Clear();
-
+            
         }
 
         if(reader.EndOfStream)
         {
+            
             readerEnd.finished = true;
-            Debug.Log("Ya acabé");
+
         }
 
     }
