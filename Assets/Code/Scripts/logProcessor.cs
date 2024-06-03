@@ -19,12 +19,22 @@ public class LogProcessor
     {
     }
 
+    public string getDate(string logLine)
+    {
+
+        string datePattern = @"^\w{3} \d{2} \d{2}:\d{2}:\d{2}";
+        Match dateMatch = Regex.Match(logLine, datePattern);
+        string date = dateMatch.Value;
+
+        return date;
+
+    }
+
     public string lineProcesser(string logLine)
     {
 
         processedLine.Clear();
 
-        string date = "";
         string LSM = "";
         string msg = "";
         string src = "";
@@ -32,9 +42,7 @@ public class LogProcessor
         string smac = "";
         string dmac = "";
 
-        string datePattern = @"^\w{3} \d{2} \d{2}:\d{2}:\d{2}";
-        Match dateMatch = Regex.Match(logLine, datePattern);
-        date = dateMatch.Value;
+        string date = getDate(logLine);
 
         string LSMPattern = @"(Tofino Firewall: [^|]+|Tofino ([^\s]+) Enforcer: [^|]+|Tofino Event Logger: [^|]+|Tofino System: [^|]+)";
         Match LSMMatch = Regex.Match(logLine, LSMPattern);
@@ -88,7 +96,6 @@ public class LogProcessor
                                  
         }
 
-        Debug.Log(logLine);
         return processedLine.ToString();
 
     }
@@ -98,16 +105,13 @@ public class LogProcessor
 
         string modePattern = @"(Tofino System: [^|]+)";
         Match modeMatch = Regex.Match(logLine, modePattern);
+        string mode = modeMatch.Value;
 
-        if(modeMatch.Success)
-        {
-            Debug.Log("Cambio \n");
+        if(mode.Contains("Change"))
             return true;
-        }
+        
         else
             return false;
-
-
 
     }
 
@@ -115,23 +119,13 @@ public class LogProcessor
     {
 
         if(logLine.Contains("OPERATIONAL"))
-        {
-
             return "OPERATIONAL";
 
-        }
         else if(logLine.Contains("TEST"))
-        {
-
             return "TEST";
 
-        }
         else
-        {
-
             return "ERROR";
-
-        }
 
     }
 

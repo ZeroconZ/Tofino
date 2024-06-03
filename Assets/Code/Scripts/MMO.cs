@@ -7,16 +7,21 @@ using TMPro;
 using System.IO;
 using UnityEditor;
 using System.Text;
+using UnityEditor.Build.Content;
 
 public class MMO : MonoBehaviour
 {
     
     public static MMO instance;
     public TextMeshProUGUI ModeDisplay;
+    StreamWriter writer;
+    LogProcessor logProcessor = new LogProcessor();
 
-    private const float updInterv = 0.5f;
+
+    private const float updInterv = 0.05f;
     private float lastUpd = 0f;
     private string tofinoMode;
+
 
     void Awake()
     {
@@ -28,6 +33,15 @@ public class MMO : MonoBehaviour
             DestroyImmediate(gameObject);
 
     }   
+
+    void Start()
+    {
+
+        string pathW = Application.dataPath + "/Docs" + "/saved Data" + "/MMO.txt";
+        writer = new StreamWriter(pathW, true);
+
+
+    }
 
     void Update()
     {
@@ -44,17 +58,49 @@ public class MMO : MonoBehaviour
 
     }
 
-    public void newMode(string mode)
+    public void ModeOnStart(string logLine)
     {
 
-        tofinoMode = mode;
+        tofinoMode = logProcessor.TofinoMode(logLine);
+        saveMode(logLine);
 
     }
 
-    public void updMode()
+    public void newMode(string logLine)
     {
 
-        ModeDisplay.text = "Estado: " + tofinoMode;
+        if(logProcessor.TofinoModeChange(logLine) == true)
+        {
+
+            tofinoMode = logProcessor.TofinoMode(logLine);
+            saveMode(logLine);
+
+        }
 
     }
+
+    private void updMode()
+    {
+
+        ModeDisplay.text = "Mode: " + tofinoMode;
+
+    }
+
+    private void saveMode(string logLine)
+    {
+
+        string date = logProcessor.getDate(logLine);
+
+        writer.WriteLine(date + " " + tofinoMode);
+
+    }
+
+    void OnDestroy()
+    {
+
+        writer.Dispose();
+
+    }
+
+
 }
