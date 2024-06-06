@@ -11,7 +11,7 @@ public class FPS : MonoBehaviour
     void Start()
     {
 
-        InvokeRepeating("GetFPS", 0, 0.1f);
+        InvokeRepeating("GetFPS", 0, 1f);
         
     }
 

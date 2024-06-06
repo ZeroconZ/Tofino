@@ -14,6 +14,8 @@ public class RW : MonoBehaviour
 
     [SerializeField] private int readLines = 1;
 
+    bool firstRead = false;
+
     public static class readerEnd
     {
 
@@ -26,10 +28,6 @@ public class RW : MonoBehaviour
 
         string pathR = Application.dataPath + "/Docs" + "/Logs" + "/logstofino.txt"; 
         reader = new StreamReader(pathR);
-
-        string line = reader.ReadLine();
-
-        MMO.instance.newMode(line);
 
         LogReader().ContinueWith(Task =>
         {
@@ -63,6 +61,14 @@ public class RW : MonoBehaviour
                 
                 lineConc.Append(logProcessor.lineProcesser(line));
                 line = lineConc.ToString();
+
+                if(firstRead == false)
+                {
+
+                    MMO.instance.newMode(line);
+                    firstRead = true;
+
+                }
 
                 if(logProcessor.TofinoModeChange(line) == true)
                     MMO.instance.ModeOnStart(line);
