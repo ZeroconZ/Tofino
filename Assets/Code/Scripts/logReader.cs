@@ -46,6 +46,8 @@ public class RW : MonoBehaviour
     public async Task LogReader()
     {
 
+        int id = 0;
+
         while(!reader.EndOfStream)
         {
             
@@ -54,24 +56,27 @@ public class RW : MonoBehaviour
             for(int i = 0; i < readLines; i++)
             {
 
+                id++;
                 line = await reader.ReadLineAsync();
                 
-                if(line == null)
-                    break;
-                
-                lineConc.Append(logProcessor.lineProcesser(line));
-                line = lineConc.ToString();
-
                 if(firstRead == false)
                 {
 
-                    MMO.instance.newMode(line);
+                    MMO.instance.ModeOnStart(line);
+                    Debug.Log(line);
                     firstRead = true;
 
                 }
 
+                if(line == null)
+                    break;
+                
+                line = id.ToString() + " " + logProcessor.lineProcesser(line);
+                lineConc.Append(line);
+                line = lineConc.ToString();
+
                 if(logProcessor.TofinoModeChange(line) == true)
-                    MMO.instance.ModeOnStart(line);
+                    MMO.instance.newMode(line);
                 
             }
             

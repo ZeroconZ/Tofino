@@ -35,18 +35,16 @@ public class LogProcessor
 
         processedLine.Clear();
 
-        string LSM = "";
-        string msg = "";
-        string src = "";
-        string dst = "";
-        string smac = "";
-        string dmac = "";
+        string src;
+        string dst;
+        string smac;
+        string dmac;
 
         string date = getDate(logLine);
 
         string LSMPattern = @"(Tofino Firewall: [^|]+|Tofino ([^\s]+) Enforcer: [^|]+|Tofino Event Logger: [^|]+|Tofino System: [^|]+)";
         Match LSMMatch = Regex.Match(logLine, LSMPattern);
-        LSM = LSMMatch.Value;
+        string LSM = LSMMatch.Value;
 
         string msgPattern = @"msg=((?!TofinoMode\b).)+";
         string srcPattern = @"src=([^ ]+)";
@@ -56,7 +54,7 @@ public class LogProcessor
         Match srcMatch = Regex.Match(logLine, srcPattern);
         Match dstMatch = Regex.Match(logLine, dstPattern);
 
-        msg = msgMatch.Value;
+        string msg = msgMatch.Value;
 
         if(!srcMatch.Success || !dstMatch.Success)
         {
@@ -117,14 +115,19 @@ public class LogProcessor
 
     public string TofinoMode(string logLine)
     {
+        string OPPattern = "OPERATIONAL";
+        string TEPattern = "TEST";
 
-        if(logLine.Contains("OPERATIONAL"))
+        if(Regex.IsMatch(logLine, OPPattern))
+
             return "OPERATIONAL";
 
-        else if(logLine.Contains("TEST"))
+        else if(Regex.IsMatch(logLine, TEPattern))
+
             return "TEST";
 
         else
+
             return "ERROR";
 
     }
