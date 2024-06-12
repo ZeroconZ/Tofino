@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventVis : MonoBehaviour
+public class EventVis : MonoBehaviour, IDragHandler
 {
 
+    public Canvas canvas;
+    private RectTransform rectTransform;
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
     StringBuilder logLineConc = new StringBuilder();
@@ -30,6 +33,13 @@ public class EventVis : MonoBehaviour
 
     }   
 
+    void Start()
+    {
+
+        rectTransform = GetComponent<RectTransform>();
+
+    }
+
     void Update()
     {
 
@@ -42,6 +52,13 @@ public class EventVis : MonoBehaviour
             lastUpd = 0f;
 
         }
+
+    }
+
+    void IDragHandler.OnDrag(PointerEventData eventData)
+    {
+
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
     }
 
@@ -58,5 +75,7 @@ public class EventVis : MonoBehaviour
         TextOnS.text = logLineConc.ToString();
 
     }
+
+
 
 }
