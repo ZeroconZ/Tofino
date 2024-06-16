@@ -58,24 +58,19 @@ public class MMO : MonoBehaviour
 
     }
 
-    public void ModeOnStart(string logLine)
+    public void ModeOnStart(string logLine, string date)
     {
 
         tofinoMode = logProcessor.TofinoMode(logLine);
-        saveMode(logLine);
+        saveMode(logLine, date);
         
     }
 
-    public void newMode(string logLine)
+    public void newMode(string logLine, string date)
     {
 
-        if(logProcessor.TofinoModeChange(logLine) == true)
-        {
-
-            tofinoMode = logProcessor.TofinoMode(logLine);
-            saveMode(logLine);
-
-        }
+        tofinoMode = logProcessor.TofinoMode(logLine);
+        saveMode(logLine, date);
 
     }
 
@@ -86,10 +81,8 @@ public class MMO : MonoBehaviour
 
     }
 
-    private void saveMode(string logLine)
+    private void saveMode(string logLine, string date)
     {
-
-        string date = logProcessor.getDate(logLine);
 
         writer.WriteLine(date + " " + tofinoMode);
 

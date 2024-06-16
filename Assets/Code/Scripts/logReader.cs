@@ -10,18 +10,10 @@ public class RW : MonoBehaviour
     
     StreamReader reader;
     LogProcessor logProcessor = new LogProcessor();
+    LogInterpreter logInterpreter = new LogInterpreter();
     StringBuilder lineConc = new StringBuilder();
 
-    [SerializeField] private int readLines = 1;
-
     bool firstRead = false;
-
-    public static class readerEnd
-    {
-
-        public static bool finished = false;
-
-    }
 
     void Start()
     {
@@ -43,7 +35,7 @@ public class RW : MonoBehaviour
 
     }
 
-    public async Task LogReader()
+    private async Task LogReader()
     {
 
         int id = 0;
@@ -53,44 +45,55 @@ public class RW : MonoBehaviour
             
             string line;
 
-            for(int i = 0; i < readLines; i++)
-            {
+            id++;
+            line = await reader.ReadLineAsync();
 
-                id++;
-                line = await reader.ReadLineAsync();
-                
-                if(firstRead == false)
-                {
+            if(firstRead == false)
+                modeTransfer(line);
+            if(logProcessor.TofinoModeChange(line) == true)
+                modeTransfer(line);
 
-                    MMO.instance.ModeOnStart(line);
-                    Debug.Log(line);
-                    firstRead = true;
+            line = logProcessor.lineProcesser(line);   
+            line = id.ToString() + " " + line;
 
-                }
+            EVTransfer(line);
+            ErrorTransfer(line, id);
 
-                if(line == null)
-                    break;
-                
-                line = id.ToString() + " " + logProcessor.lineProcesser(line);
-                lineConc.Append(line);
-                line = lineConc.ToString();
-
-                if(logProcessor.TofinoModeChange(line) == true)
-                    MMO.instance.newMode(line);
-                
-            }
-            
-            EventVis.instance.newLog(lineConc.ToString());
-            lineConc.Clear();
-            
         }
 
-        if(reader.EndOfStream)
+    }
+
+    void modeTransfer(string line)
+    {
+
+        string date = logProcessor.getDate(line);
+
+        if(firstRead == false)
         {
-            
-            readerEnd.finished = true;
+
+            MMO.instance.ModeOnStart(line, date);
+            firstRead = true;
 
         }
+        else
+            MMO.instance.newMode(line, date);
+
+    }
+
+    void EVTransfer(string line)
+    {
+
+        EventVis.instance.newLog(line);
+
+    }
+
+    void ErrorTransfer(string line, int id)
+    {
+        
+        string idS = id.ToString();
+        string error = logInterpreter.msgError(line);
+
+        EventNotif.instance.newNotif(error, idS);
 
     }
 
