@@ -10,7 +10,6 @@ public class RW : MonoBehaviour
     
     StreamReader reader;
     LogProcessor logProcessor = new LogProcessor();
-    LogInterpreter logInterpreter = new LogInterpreter();
     StringBuilder lineConc = new StringBuilder();
 
     bool firstRead = false;
@@ -53,7 +52,7 @@ public class RW : MonoBehaviour
             if(logProcessor.TofinoModeChange(line) == true)
                 modeTransfer(line);
 
-            line = logProcessor.lineProcesser(line);   
+            line = logProcessor.lineProcessor(line);   
             line = id.ToString() + " " + line;
 
             EVTransfer(line);
@@ -67,11 +66,12 @@ public class RW : MonoBehaviour
     {
 
         string date = logProcessor.getDate(line);
+        line = logProcessor.TofinoMode(line);
 
         if(firstRead == false)
         {
 
-            MMO.instance.ModeOnStart(line, date);
+            MMO.instance.newMode(line, date);
             firstRead = true;
 
         }
@@ -91,7 +91,7 @@ public class RW : MonoBehaviour
     {
         
         string idS = id.ToString();
-        string error = logInterpreter.msgError(line);
+        string error = logProcessor.getError(line);
 
         EventNotif.instance.newNotif(error, idS);
 
