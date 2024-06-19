@@ -52,7 +52,7 @@ public class RW : MonoBehaviour
             if(logProcessor.TofinoModeChange(line) == true)
                 modeTransfer(line);
 
-            line = logProcessor.lineProcessor(line);   
+            line = logProcessor.eventProcessor(line);   
             line = id.ToString() + " " + line;
 
             EVTransfer(line);

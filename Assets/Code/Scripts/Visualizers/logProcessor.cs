@@ -29,68 +29,128 @@ public class LogProcessor
 
     }
 
-    public string lineProcessor(string logLine)
+    public string getLSM(string logLine)
     {
-
-        processedLine.Clear();
-
-        string src;
-        string dst;
-        string smac;
-        string dmac;
-
-        string date = getDate(logLine);
 
         string LSMPattern = @"(Tofino Firewall: [^|]+|Tofino ([^\s]+) Enforcer: [^|]+|Tofino Event Logger: [^|]+|Tofino System: [^|]+)";
         Match LSMMatch = Regex.Match(logLine, LSMPattern);
         string LSM = LSMMatch.Value;
 
+        return LSM;
+
+    }
+
+    public string getMsg(string logLine)
+    {
+
         string msgPattern = @"msg=((?!TofinoMode\b).)+";
-        string srcPattern = @"src=([^ ]+)";
-        string dstPattern = @"dst=([^ ]+)";
-
         Match msgMatch = Regex.Match(logLine, msgPattern);
-        Match srcMatch = Regex.Match(logLine, srcPattern);
-        Match dstMatch = Regex.Match(logLine, dstPattern);
-
         string msg = msgMatch.Value;
 
-        if(!srcMatch.Success || !dstMatch.Success)
+        return msg;
+
+    }
+
+    public string getSrcIP(string logLine)
+    {
+
+        string srcPattern = @"src=([^ ]+)";
+        Match srcMatch = Regex.Match(logLine, srcPattern);       
+        string src = srcMatch.Value + " ";
+
+        return src;
+
+    }
+
+    public bool isSrc(string logLine)
+    {
+
+        string srcPattern = @"src=([^ ]+)";
+        Match srcMatch = Regex.Match(logLine, srcPattern);
+        bool srcSucc = srcMatch.Success;
+          
+        return srcSucc;
+                
+    }
+
+    public string getDstIP(string logLine)
+    {
+
+        string dstPattern = @"dst=([^ ]+)";
+        Match dstMatch = Regex.Match(logLine, dstPattern);
+        string dst = dstMatch.Value;
+
+        return dst;
+
+    }
+
+    public bool isDst(string logLine)
+    {
+
+        string dstPattern = @"dst=([^ ]+)";
+        Match dstMatch = Regex.Match(logLine, dstPattern);
+        bool dst = dstMatch.Success;
+
+        return dst;        
+
+    }
+
+    public string getSMAC(string logLine)
+    {
+
+        string smacPattern = @"smac=([0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5})";
+        Match smacMatch = Regex.Match(logLine, smacPattern);
+        string smac = smacMatch.Value + " ";
+
+        return smac;
+
+    }
+
+    public string getDMAC(string logLine)
+    {
+
+        string dmacPattern = @"dmac=([0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5})";
+        Match dmacMatch = Regex.Match(logLine, dmacPattern);
+        string dmac = dmacMatch.Value;
+
+        return dmac;
+
+    }
+
+    public string eventProcessor(string logLine)
+    {
+
+        processedLine.Clear();
+
+        string date = getDate(logLine);
+        string LSM = getLSM(logLine);
+        string msg = getMsg(logLine);
+
+        if(!isSrc(logLine) || !isDst(logLine))
         {
 
-            string smacPattern = @"smac=((?!dmac=\b).)+";
-            string dmacPattern = @"dmac=((?!proto=\b).)+";
+            string smac = getSMAC(logLine);
+            string dmac = getDMAC(logLine);
 
-            Match smacMatch = Regex.Match(logLine, smacPattern);
-            Match dmacMatch = Regex.Match(logLine, dmacPattern);
-
-            smac = smacMatch.Value;
-            smac = smac.Trim();
-            dmac = dmacMatch.Value;
-            dmac = dmac.Trim();
-
-            processedLine.Append(date + "|")
-                         .Append(LSM + "|")
-                         .Append(msg + "|")
-                         .Append(smac +"|")
-                         .Append(dmac + "\n");
+            processedLine.Append(date)
+                         .Append(LSM)
+                         .Append(msg)
+                         .Append(smac)
+                         .Append(dmac);
                      
         }
         else
         {
 
-            msg = msgMatch.Value;
-            src = srcMatch.Value;
-            src = src.Trim();
-            dst = dstMatch.Value;
-            dst = dst.Trim();
+            string src = getSrcIP(logLine);
+            string dst = getDstIP(logLine);
 
-            processedLine.Append(date + "|")
-                        .Append(LSM + "|")
-                        .Append(msg + "|")
-                        .Append(src + "|")
-                        .Append(dst + "\n");
-                                 
+            processedLine.Append(date)
+                         .Append(LSM)
+                         .Append(msg)
+                         .Append(src)
+                         .Append(dst);           
+
         }
 
         return processedLine.ToString();
