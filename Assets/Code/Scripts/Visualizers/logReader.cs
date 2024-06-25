@@ -49,7 +49,7 @@ public class RW : MonoBehaviour
 
             if(firstRead == false)
                 modeTransfer(line);
-            if(logProcessor.TofinoModeChange(line) == true)
+            if(logProcessor.getModeChange(line) == true)
                 modeTransfer(line);
 
             line = logProcessor.eventProcessor(line);   
@@ -66,7 +66,7 @@ public class RW : MonoBehaviour
     {
 
         string date = logProcessor.getDate(line);
-        line = logProcessor.TofinoMode(line);
+        line = logProcessor.getMode(line);
 
         if(firstRead == false)
         {

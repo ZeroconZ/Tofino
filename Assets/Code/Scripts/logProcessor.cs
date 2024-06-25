@@ -1,0 +1,135 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.IO;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
+using System.Text;
+using UnityEditor.MPE;
+
+
+
+
+public class LogProcessor
+{
+
+    StringBuilder processedLine = new StringBuilder();
+
+    public LogProcessor()
+    {
+    }
+
+    public string getDate(string logLine)
+    {
+
+        string datePattern = @"^\w{3} \d{2} \d{2}:\d{2}:\d{2}";
+        Match dateMatch = Regex.Match(logLine, datePattern);
+        string date = dateMatch.Value;
+
+        return date;
+
+    }
+
+    public string lineProcesser(string logLine)
+    {
+
+        processedLine.Clear();
+
+        string src;
+        string dst;
+        string smac;
+        string dmac;
+
+        string date = getDate(logLine);
+
+        string LSMPattern = @"(Tofino Firewall: [^|]+|Tofino ([^\s]+) Enforcer: [^|]+|Tofino Event Logger: [^|]+|Tofino System: [^|]+)";
+        Match LSMMatch = Regex.Match(logLine, LSMPattern);
+        string LSM = LSMMatch.Value;
+
+        string msgPattern = @"msg=((?!TofinoMode\b).)+";
+        string srcPattern = @"src=([^ ]+)";
+        string dstPattern = @"dst=([^ ]+)";
+
+        Match msgMatch = Regex.Match(logLine, msgPattern);
+        Match srcMatch = Regex.Match(logLine, srcPattern);
+        Match dstMatch = Regex.Match(logLine, dstPattern);
+
+        string msg = msgMatch.Value;
+
+        if(!srcMatch.Success || !dstMatch.Success)
+        {
+
+            string smacPattern = @"smac=((?!dmac=\b).)+";
+            string dmacPattern = @"dmac=((?!proto=\b).)+";
+
+            Match smacMatch = Regex.Match(logLine, smacPattern);
+            Match dmacMatch = Regex.Match(logLine, dmacPattern);
+
+            smac = smacMatch.Value;
+            smac = smac.Trim();
+            dmac = dmacMatch.Value;
+            dmac = dmac.Trim();
+
+            processedLine.Append(date + "|")
+                         .Append(LSM + "|")
+                         .Append(msg + "|")
+                         .Append(smac +"|")
+                         .Append(dmac + "\n");
+                     
+        }
+        else
+        {
+
+            msg = msgMatch.Value;
+            src = srcMatch.Value;
+            src = src.Trim();
+            dst = dstMatch.Value;
+            dst = dst.Trim();
+
+            processedLine.Append(date + "|")
+                        .Append(LSM + "|")
+                        .Append(msg + "|")
+                        .Append(src + "|")
+                        .Append(dst + "\n");
+                                 
+        }
+
+        return processedLine.ToString();
+
+    }
+
+    public bool TofinoModeChange(string logLine)
+    {
+
+        string modePattern = @"(Tofino System: [^|]+)";
+        Match modeMatch = Regex.Match(logLine, modePattern);
+        string mode = modeMatch.Value;
+
+        if(mode.Contains("Change"))
+            return true;
+        
+        else
+            return false;
+
+    }
+
+    public string TofinoMode(string logLine)
+    {
+        string OPPattern = "OPERATIONAL";
+        string TEPattern = "TEST";
+
+        if(Regex.IsMatch(logLine, OPPattern))
+
+            return "OPERATIONAL";
+
+        else if(Regex.IsMatch(logLine, TEPattern))
+
+            return "TEST";
+
+        else
+
+            return "ERROR";
+
+    }
+
+}

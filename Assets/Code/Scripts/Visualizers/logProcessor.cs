@@ -62,17 +62,6 @@ public class LogProcessor
 
     }
 
-    public bool isSrc(string logLine)
-    {
-
-        string srcPattern = @"src=([^ ]+)";
-        Match srcMatch = Regex.Match(logLine, srcPattern);
-        bool srcSucc = srcMatch.Success;
-          
-        return srcSucc;
-                
-    }
-
     public string getDstIP(string logLine)
     {
 
@@ -84,7 +73,18 @@ public class LogProcessor
 
     }
 
-    public bool isDst(string logLine)
+    private bool isSrc(string logLine)
+    {
+
+        string srcPattern = @"src=([^ ]+)";
+        Match srcMatch = Regex.Match(logLine, srcPattern);
+        bool srcSucc = srcMatch.Success;
+          
+        return srcSucc;
+                
+    }
+
+     private bool isDst(string logLine)
     {
 
         string dstPattern = @"dst=([^ ]+)";
@@ -157,7 +157,7 @@ public class LogProcessor
 
     }
 
-    public bool TofinoModeChange(string logLine)
+    public bool getModeChange(string logLine)
     {
 
         string modePattern = @"(Tofino System: [^|]+)";
@@ -172,8 +172,9 @@ public class LogProcessor
 
     }
 
-    public string TofinoMode(string logLine)
+    public string getMode(string logLine)
     {
+        
         string OPPattern = "OPERATIONAL";
         string TEPattern = "TEST";
 
