@@ -18,7 +18,7 @@ public class MMO : MonoBehaviour
     LogProcessor logProcessor = new LogProcessor();
 
 
-    private const float updInterv = 0.5f;
+    private const float updInterv = 0.05f;
     private float lastUpd = 0f;
     private string tofinoMode;
 
@@ -61,7 +61,7 @@ public class MMO : MonoBehaviour
     public void newMode(string logLine, string date)
     {
 
-        tofinoMode = logProcessor.TofinoMode(logLine);
+        tofinoMode = logLine;
         saveMode(logLine, date);
 
     }

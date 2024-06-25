@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Text;
 
-public class RW : MonoBehaviour
+public class logEmu : MonoBehaviour
 {
     
     StreamReader reader;
