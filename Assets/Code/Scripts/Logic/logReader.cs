@@ -10,21 +10,36 @@ using UnityEditor.PackageManager.Requests;
 public class logReader : MonoBehaviour
 {
 
-    [ContextMenu("Read log")]
+    LogProcessor logProcessor = new LogProcessor();
 
-    async void readWeb()
-    {
-
-        Debug.Log("Generado solicitud");
-        var result = await LogReader();
-        Debug.Log(result);
-
-    }
 
     string username = "dtuser";
     string password = "TofinoDT_2024";
 
-    private async Task<string> LogReader()
+
+    [ContextMenu("Read log")]
+    void Start()
+    {
+
+        StartCoroutine(keepReading());
+
+    }
+
+    private IEnumerator keepReading()
+    {
+
+        while(true)
+        {
+
+            yield return StartCoroutine(APIReader());
+
+            yield return new WaitForSeconds(0.05f);
+
+        }
+
+    }
+
+    private IEnumerator APIReader()
     {
 
         UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino-all");
@@ -33,26 +48,43 @@ public class logReader : MonoBehaviour
         string authHeaderValue = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(auth));
         webReader.SetRequestHeader("Authorization", "Basic " + authHeaderValue);
 
-        webReader.SendWebRequest();
-
-        while(!webReader.isDone)
-        {
-
-            await Task.Yield();
-
-        }
+        yield return webReader.SendWebRequest();
 
         if(webReader.result == UnityWebRequest.Result.ConnectionError)
-        {
-            
             Debug.Log("Error" + webReader.error);
-            return webReader.error;
+
+        else
+            divideLines(webReader.downloadHandler.text);
+
+    }
+
+    private void divideLines(string logData)
+    {
+
+        Debug.Log(logData);
+
+        StringBuilder logBuilder = new StringBuilder(logData);
+        string line;
+        int previousIndex = 0;
+        int index;
+        
+        while ((index = logBuilder.ToString().IndexOf("<br>", previousIndex)) != -1)
+        {
+
+            line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
+            Debug.Log(line);
+            previousIndex = index + 4;
 
         }
-        else
+
+        if (previousIndex < logBuilder.Length)
         {
 
-            return webReader.downloadHandler.text;
+            string lastLine = logBuilder.ToString().Substring(previousIndex);
+            Debug.Log(lastLine);
+
+            string lastLineDate = logProcessor.getDate(lastLine);
+            Debug.Log(lastLineDate);
 
         }
 
