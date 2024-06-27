@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text;
 using UnityEngine.Networking;
 using UnityEditor.PackageManager.Requests;
+using System.Text.RegularExpressions;
 
 public class logReader : MonoBehaviour
 {
@@ -61,9 +62,9 @@ public class logReader : MonoBehaviour
     private void divideLines(string logData)
     {
 
-        Debug.Log(logData);
-
         StringBuilder logBuilder = new StringBuilder(logData);
+        logBuilder.Append("<end>");
+
         string line;
         int previousIndex = 0;
         int index;
@@ -75,16 +76,13 @@ public class logReader : MonoBehaviour
             Debug.Log(line);
             previousIndex = index + 4;
 
-        }
+            if(Regex.IsMatch(line, "<end>"))
+            {
 
-        if (previousIndex < logBuilder.Length)
-        {
+                string lastLineDate = logProcessor.getDate(line);
+                Debug.Log(lastLineDate);
 
-            string lastLine = logBuilder.ToString().Substring(previousIndex);
-            Debug.Log(lastLine);
-
-            string lastLineDate = logProcessor.getDate(lastLine);
-            Debug.Log(lastLineDate);
+            }
 
         }
 
