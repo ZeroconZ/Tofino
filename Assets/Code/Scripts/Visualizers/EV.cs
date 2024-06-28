@@ -16,6 +16,7 @@ public class EventVis : MonoBehaviour, IDragHandler
     private RectTransform rectTransform;
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
+    EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
 
     private const float updInterv = 0.5f;
@@ -62,10 +63,13 @@ public class EventVis : MonoBehaviour, IDragHandler
 
     }
 
-    public void newLog(string line)
+    public void newLog(string line, string id)
     {
         
-        logLineConc.AppendLine(line);
+        string proLine = logProcessor.eventProcessor(line);
+        logLineConc.Append(id)
+                   .Append(" ")
+                   .AppendLine(proLine);
 
     }
 

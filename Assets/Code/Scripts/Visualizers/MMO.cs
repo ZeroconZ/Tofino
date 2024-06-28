@@ -15,13 +15,11 @@ public class MMO : MonoBehaviour
     public static MMO instance;
     public TextMeshProUGUI ModeDisplay;
     StreamWriter writer;
-    LogProcessor logProcessor = new LogProcessor();
-
+    EventProcessor logProcessor = new EventProcessor();
 
     private const float updInterv = 0.05f;
     private float lastUpd = 0f;
     private string tofinoMode;
-
 
     void Awake()
     {
@@ -58,11 +56,13 @@ public class MMO : MonoBehaviour
 
     }
 
-    public void newMode(string logLine, string date)
+    public void newMode(string logLine)
     {
 
-        tofinoMode = logLine;
-        saveMode(logLine, date);
+        string date = logProcessor.getDate(logLine);
+        tofinoMode = logProcessor.getMode(logLine);
+
+        saveMode(tofinoMode, date);
 
     }
 

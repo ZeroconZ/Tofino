@@ -18,6 +18,8 @@ public class EventNotif : MonoBehaviour, IDragHandler
     public TextMeshProUGUI ErrorNotif;
     public TextMeshProUGUI MoreInfo;
 
+    EventProcessor logProcessor = new EventProcessor();
+
     private string error;
     private string id;
 
@@ -68,7 +70,7 @@ public class EventNotif : MonoBehaviour, IDragHandler
     public void newNotif(string line, string idS)
     {
         
-        error = line;
+        error = logProcessor.getError(line);
         id = idS;
 
     }

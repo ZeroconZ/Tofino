@@ -9,12 +9,12 @@ using UnityEditor.MPE;
 using System;
 using UnityEditor.PackageManager;
 
-public class LogProcessor
+public class EventProcessor
 {
 
     StringBuilder processedLine = new StringBuilder();
 
-    public LogProcessor()
+    public EventProcessor()
     {
     }
 

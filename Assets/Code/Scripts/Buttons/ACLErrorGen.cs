@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ACLErrorGen : MonoBehaviour
 {
 
-    LogProcessor logProcessor = new LogProcessor();
+    EventProcessor logProcessor = new EventProcessor();
 
     public void ButtonPressed()
     {

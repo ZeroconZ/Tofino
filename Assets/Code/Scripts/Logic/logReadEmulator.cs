@@ -9,7 +9,7 @@ public class logEmu : MonoBehaviour
 {
     
     StreamReader reader;
-    LogProcessor logProcessor = new LogProcessor();
+    EventProcessor logProcessor = new EventProcessor();
     StringBuilder lineConc = new StringBuilder();
 
     bool firstRead = false;
@@ -48,52 +48,16 @@ public class logEmu : MonoBehaviour
             line = await reader.ReadLineAsync();
 
             if(firstRead == false)
-                modeTransfer(line);
+                MMO.instance.newMode(line);
             if(logProcessor.getModeChange(line) == true)
-                modeTransfer(line);
+                MMO.instance.newMode(line);
+ 
+            string idS = id.ToString();
 
-            line = logProcessor.eventProcessor(line);   
-            line = id.ToString() + " " + line;
-
-            EVTransfer(line);
-            ErrorTransfer(line, id);
-
-        }
-
-    }
-
-    void modeTransfer(string line)
-    {
-
-        string date = logProcessor.getDate(line);
-        line = logProcessor.getMode(line);
-
-        if(firstRead == false)
-        {
-
-            MMO.instance.newMode(line, date);
-            firstRead = true;
+            EventVis.instance.newLog(line, idS);
+            EventNotif.instance.newNotif(line, idS);
 
         }
-        else
-            MMO.instance.newMode(line, date);
-
-    }
-
-    void EVTransfer(string line)
-    {
-
-        EventVis.instance.newLog(line);
-
-    }
-
-    void ErrorTransfer(string line, int id)
-    {
-        
-        string idS = id.ToString();
-        string error = logProcessor.getError(line);
-
-        EventNotif.instance.newNotif(error, idS);
 
     }
 

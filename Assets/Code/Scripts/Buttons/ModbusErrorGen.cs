@@ -5,7 +5,7 @@ using UnityEngine;
 public class ModbusErrorGen : MonoBehaviour
 {
 
-    LogProcessor logProcessor = new LogProcessor();
+    EventProcessor logProcessor = new EventProcessor();
 
     [SerializeField] string functionID;
 
