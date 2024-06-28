@@ -132,10 +132,10 @@ public class EventProcessor
             string smac = getSMAC(logLine);
             string dmac = getDMAC(logLine);
 
-            processedLine.Append(date)
-                         .Append(LSM)
-                         .Append(msg)
-                         .Append(smac)
+            processedLine.Append(date + " ")
+                         .Append(LSM + " ")
+                         .Append(msg + " ")
+                         .Append(smac + " ")
                          .Append(dmac);
                      
         }
@@ -145,11 +145,11 @@ public class EventProcessor
             string src = getSrcIP(logLine);
             string dst = getDstIP(logLine);
 
-            processedLine.Append(date)
-                         .Append(LSM)
-                         .Append(msg)
-                         .Append(src)
-                         .Append(dst);           
+            processedLine.Append(date + " ")
+                         .Append(LSM + " ")
+                         .Append(msg + " ")
+                         .Append(src + " ")
+                         .Append(dst + " ");           
 
         }
 

@@ -21,8 +21,8 @@ public class logReader : MonoBehaviour
 
     string lastLineDate;
     string lastLineProcc;
-
-
+    
+    int id;
     bool firstReq = true;
 
 
@@ -34,6 +34,7 @@ public class logReader : MonoBehaviour
 
     }
 
+
     private IEnumerator keepReading()
     {
 
@@ -42,11 +43,12 @@ public class logReader : MonoBehaviour
 
             yield return StartCoroutine(APIReader());
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
 
         }
 
     }
+
 
     private IEnumerator APIReader()
     {
@@ -67,11 +69,11 @@ public class logReader : MonoBehaviour
 
     }
 
+
     private void divideLines(string logData)
     {
 
         StringBuilder logBuilder = new StringBuilder(logData);
-        logBuilder.Append("<end>");
 
         string line = string.Empty;
         string previousLine = string.Empty;
@@ -82,20 +84,17 @@ public class logReader : MonoBehaviour
         while ((index = logBuilder.ToString().IndexOf("<br>", previousIndex)) != -1)
         {
 
-            if(firstReq)
+            if(firstReq == true)
             {
 
-                previousLine = line;
                 line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
-                Debug.Log(line);
+                remmiter(line, previousLine);
                 previousIndex = index + 4;
-                firstReq = false;
 
             }
             else
             {
 
-                previousLine = line;
                 line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
                 previousIndex = index + 4;
 
@@ -103,63 +102,89 @@ public class logReader : MonoBehaviour
                 {
 
                     case 0:
-                        Debug.Log("Era viejito");
                         break;
 
                     case 1:
-                        Debug.Log("Era nuevito");
+                        remmiter(line, previousLine);
                         break;
 
                     case 2:
-                        Debug.Log("Son igualitos");
-                        break;
+                        if(lastLineProcc == logProcessor.eventProcessor(line))
+                            break;
 
+                        else
+                        {
+
+                            remmiter(line, previousLine);
+                            break;
+
+                        }
+                        
                     default:
                         Debug.Log("Error");
                         break;
 
                 }
 
+                previousLine = line;
+
             }
 
         }
+
+        firstReq = false;
 
         if (previousIndex < logBuilder.Length)
         {
 
             lastLineDate = logProcessor.getDate(previousLine);
             lastLineProcc = logProcessor.eventProcessor(previousLine);
-            Debug.Log(lastLineDate);
 
         }
 
     }
 
+
     private int dateCompare(string oldDate, string newDate)
     {
+
+        if(string.IsNullOrEmpty(oldDate) || string.IsNullOrEmpty(newDate))
+            return 0;
+
 
         DateTime refDate = DateTime.ParseExact(oldDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
         DateTime toCompDate = DateTime.ParseExact(newDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
 
         if(refDate > toCompDate)
-        {
-
-            Debug.Log("El evento era anterior");
             return 0;
 
-        }
         else if(refDate < toCompDate)
+            return 1;
+
+        else
+            return 2;
+    
+    }
+
+
+    private void remmiter(string line, string previousLine)
+    {
+
+        string line1 = logProcessor.eventProcessor(line);
+        string previousLine1 = logProcessor.eventProcessor(previousLine);
+
+        if(line.Equals(previousLine))
         {
 
-            Debug.Log("El evento era posterior");
-            return 1;
+            return;
 
         }
         else
         {
 
-            Debug.Log("Son coetaneos");
-            return 2;
+            id++;
+            EventVis.instance.newLog(line, id.ToString());
+            EventNotif.instance.newNotif(line, id.ToString());
 
         }
 
