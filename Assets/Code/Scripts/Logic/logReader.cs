@@ -186,6 +186,8 @@ public class logReader : MonoBehaviour
             EventVis.instance.newLog(line, id.ToString());
             EventNotif.instance.newNotif(line, id.ToString());
 
+            Debug.Log(line1);
+
         }
 
     }
