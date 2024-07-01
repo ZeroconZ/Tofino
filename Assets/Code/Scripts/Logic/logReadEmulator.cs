@@ -54,7 +54,7 @@ public class logEmu : MonoBehaviour
  
             string idS = id.ToString();
 
-            EventVis.instance.newLog(line, idS);
+            EventVis.instance.newLog(line, id);
             EventNotif.instance.newNotif(line, idS);
 
         }

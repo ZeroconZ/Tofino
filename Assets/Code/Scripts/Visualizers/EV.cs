@@ -19,6 +19,8 @@ public class EventVis : MonoBehaviour, IDragHandler
     EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
 
+    private Queue<string> logQueue = new Queue<string>();
+
     private const float updInterv = 0.5f;
     private float lastUpd = 0f;
     private string logLine;
@@ -41,21 +43,6 @@ public class EventVis : MonoBehaviour, IDragHandler
 
     }
 
-    void Update()
-    {
-
-        lastUpd += Time.deltaTime;
-
-        if(lastUpd >= updInterv)
-        {
-            
-            updText();
-            lastUpd = 0f;
-
-        }
-
-    }
-
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
 
@@ -63,13 +50,20 @@ public class EventVis : MonoBehaviour, IDragHandler
 
     }
 
-    public void newLog(string line, string id)
+    public void newLog(string line, int id)
     {
         
+        if(id % 100 == 0)
+            removeOldLines(id);
+
         string proLine = logProcessor.eventProcessor(line);
-        logLineConc.Append(id)
+        logLineConc.Append(id.ToString())
                    .Append(" ")
                    .AppendLine(proLine);
+
+        
+
+        updText();
 
     }
 
@@ -79,7 +73,24 @@ public class EventVis : MonoBehaviour, IDragHandler
         TextOnS.text = logLineConc.ToString();
 
     }
+    
+    private void removeOldLines(int id)
+    {
 
+        int previousIndex = 0;
+        int index = 0;
 
+        for (int i = 0; i < id/2; i++)
+        {
+            index = logLineConc.ToString().IndexOf('\n', previousIndex);
+            if (index == -1)
+            {
+
+                break;
+            }
+
+            logLineConc.Remove(previousIndex, index - previousIndex + 1);
+        }
+    }
 
 }

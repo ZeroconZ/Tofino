@@ -88,7 +88,7 @@ public class logReader : MonoBehaviour
             {
 
                 line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
-                remmiter(line, previousLine);
+                remitter(line, previousLine);
                 previousIndex = index + 4;
 
             }
@@ -105,7 +105,7 @@ public class logReader : MonoBehaviour
                         break;
 
                     case 1:
-                        remmiter(line, previousLine);
+                        remitter(line, previousLine);
                         break;
 
                     case 2:
@@ -115,7 +115,7 @@ public class logReader : MonoBehaviour
                         else
                         {
 
-                            remmiter(line, previousLine);
+                            remitter(line, previousLine);
                             break;
 
                         }
@@ -167,7 +167,7 @@ public class logReader : MonoBehaviour
     }
 
 
-    private void remmiter(string line, string previousLine)
+    private void remitter(string line, string previousLine)
     {
 
         string line1 = logProcessor.eventProcessor(line);
@@ -183,7 +183,7 @@ public class logReader : MonoBehaviour
         {
 
             id++;
-            EventVis.instance.newLog(line, id.ToString());
+            EventVis.instance.newLog(line, id);
             EventNotif.instance.newNotif(line, id.ToString());
 
             Debug.Log(line1);
