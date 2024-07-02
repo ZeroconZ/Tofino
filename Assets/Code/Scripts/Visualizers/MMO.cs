@@ -17,8 +17,7 @@ public class MMO : MonoBehaviour
     StreamWriter writer;
     EventProcessor logProcessor = new EventProcessor();
 
-    private const float updInterv = 0.05f;
-    private float lastUpd = 0f;
+
     private string tofinoMode;
 
     void Awake()
@@ -41,20 +40,6 @@ public class MMO : MonoBehaviour
 
     }
 
-    void Update()
-    {
-
-        lastUpd += Time.deltaTime;
-
-        if(lastUpd >= updInterv)
-        {
-            
-            updMode();
-            lastUpd = 0f;
-
-        }
-
-    }
 
     public void newMode(string logLine)
     {
@@ -63,6 +48,8 @@ public class MMO : MonoBehaviour
         tofinoMode = logProcessor.getMode(logLine);
 
         saveMode(tofinoMode, date);
+
+        updMode();
 
     }
 
