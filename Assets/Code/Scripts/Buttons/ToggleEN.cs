@@ -10,7 +10,7 @@ public class ToggleEN : MonoBehaviour
     public void Start()
     {
 
-        EventNotif.gameObject.SetActive(true);
+        EventNotif.gameObject.SetActive(false);
 
     }
 

@@ -247,6 +247,13 @@ public class EventProcessor
 
     }
 
+    public string getProtocol(string logLine)
+    {
+
+        return "pito";
+
+    }
+
     private string modbusErrors(int code)
     {
 

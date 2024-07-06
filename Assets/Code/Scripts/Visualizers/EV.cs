@@ -9,11 +9,11 @@ using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventVis : MonoBehaviour, IDragHandler
+public class EventVis : MonoBehaviour//, IDragHandler
 {
 
-    public Canvas canvas;
-    private RectTransform rectTransform;
+    //public Canvas canvas;
+    //private RectTransform rectTransform;
     public static EventVis instance;
     public TextMeshProUGUI TextOnS;
     EventProcessor logProcessor = new EventProcessor();
@@ -30,7 +30,7 @@ public class EventVis : MonoBehaviour, IDragHandler
             DestroyImmediate(gameObject);
 
     }   
-
+/*
     void Start()
     {
 
@@ -45,7 +45,7 @@ public class EventVis : MonoBehaviour, IDragHandler
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
     }
-
+*/
     public void newLog(string line, int id)
     {
         

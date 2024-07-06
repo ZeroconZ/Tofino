@@ -9,11 +9,11 @@ using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventNotif : MonoBehaviour, IDragHandler
+public class EventNotif : MonoBehaviour//, IDragHandler
 {
 
-    public Canvas canvas;
-    private RectTransform rectTransform;
+    //public Canvas canvas;
+    //private RectTransform rectTransform;
     public static EventNotif instance;
     public TextMeshProUGUI ErrorNotif;
     public TextMeshProUGUI MoreInfo;
@@ -22,9 +22,6 @@ public class EventNotif : MonoBehaviour, IDragHandler
 
     private string error;
     private string id;
-
-    private const float updInterv = 0.5f;
-    private float lastUpd = 0f;
 
     void Awake()
     {
@@ -36,27 +33,12 @@ public class EventNotif : MonoBehaviour, IDragHandler
             DestroyImmediate(gameObject);
 
     }       
-
+/*
     void Start()
     {
 
         rectTransform = GetComponent<RectTransform>();
 
-
-    }
-
-    void Update()
-    {
-
-        lastUpd += Time.deltaTime;
-
-        if(lastUpd >= updInterv)
-        {
-            
-            updText();
-            lastUpd = 0f;
-
-        }
 
     }
 
@@ -66,7 +48,7 @@ public class EventNotif : MonoBehaviour, IDragHandler
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
     }
-
+*/
     public void newNotif(string line, string idS)
     {
         
