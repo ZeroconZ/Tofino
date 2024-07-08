@@ -152,8 +152,8 @@ public class logReader : MonoBehaviour
             return 0;
 
 
-        DateTime refDate = DateTime.ParseExact(oldDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
-        DateTime toCompDate = DateTime.ParseExact(newDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
+        DateTime refDate = DateTime.ParseExact(oldDate, "MMM  d HH:mm:ss", CultureInfo.InvariantCulture);
+        DateTime toCompDate = DateTime.ParseExact(newDate, "MMM  d HH:mm:ss", CultureInfo.InvariantCulture);
 
         if(refDate > toCompDate)
             return 0;

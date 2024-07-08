@@ -21,7 +21,7 @@ public class EventProcessor
     public string getDate(string logLine)
     {
 
-        string datePattern = @"^\w{3} \d{2} \d{2}:\d{2}:\d{2}";
+        string datePattern = @"^\w{3} +\d{1,2} \d{2}:\d{2}:\d{2}";
         Match dateMatch = Regex.Match(logLine, datePattern);
         string date = dateMatch.Value;
 
@@ -250,7 +250,24 @@ public class EventProcessor
     public string getProtocol(string logLine)
     {
 
-        return "pito";
+        string protoPattern = @"proto=(\w+)/(\w+)";
+        Match protoMatch = Regex.Match(logLine, protoPattern);
+        string proto = protoMatch.Groups[2].Value;
+
+        if(proto == "TCP" && Regex.IsMatch(logLine, "dpt=502"))
+        {
+
+            Debug.Log("Modbus");
+
+        }
+        else
+        {
+
+            Debug.Log(proto);
+
+        }
+        
+        return proto;
 
     }
 

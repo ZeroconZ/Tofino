@@ -57,6 +57,8 @@ public class EventVis : MonoBehaviour//, IDragHandler
                    .Append(" ")
                    .AppendLine(proLine);
 
+        logProcessor.getProtocol(line);
+
         updText();
 
     }

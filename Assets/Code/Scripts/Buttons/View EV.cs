@@ -38,6 +38,14 @@ public class View : MonoBehaviour
             ViewICMP.SetActive(false);            
 
         }
+        else if(val == 2)
+        {
+
+            ViewAll.SetActive(false);
+            ViewModbus.SetActive(false);
+            ViewICMP.SetActive(true); 
+
+        }
 
     }
 
