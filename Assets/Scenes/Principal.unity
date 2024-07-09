@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2862,7 +2862,7 @@ GameObject:
   - component: {fileID: 931960285}
   - component: {fileID: 931960284}
   m_Layer: 6
-  m_Name: Line TSA-VAR (1)
+  m_Name: 'Line HMI-VAR '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2909,7 +2909,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b95439c1e08aad742a4f980f4cfb4530, type: 2}
+  - {fileID: 2100000, guid: 6bffab811d0ccb34cbd8f07911ea919e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2986,6 +2986,7 @@ MonoBehaviour:
   OD_TSA: {fileID: 2100000, guid: f8c64696e07afe5429f23782f501534e, type: 2}
   PLC_TSA: {fileID: 2100000, guid: ce38fff568e36eb419e8c1c02b30c893, type: 2}
   TSA_VAR: {fileID: 2100000, guid: b95439c1e08aad742a4f980f4cfb4530, type: 2}
+  HMI_VAR: {fileID: 2100000, guid: 6bffab811d0ccb34cbd8f07911ea919e, type: 2}
 --- !u!4 &937369889
 Transform:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public class CCM : MonoBehaviour
     public Material OD_TSA;
     public Material PLC_TSA;
     public Material TSA_VAR;
+    public Material HMI_VAR;
 
     void Awake()
     {
@@ -24,14 +25,6 @@ public class CCM : MonoBehaviour
 
     }   
 
-    void Start()
-    {
-        
-        OD_TSA.color = Color.red;
-        PLC_TSA.color = Color.red;
-        TSA_VAR.color = Color.red;
-
-    }
 
     void OnDestroy()
     {
@@ -64,6 +57,12 @@ public class CCM : MonoBehaviour
             TSA_VAR.color = Color.red;
 
         }
+        else if(src == "src=10.1.1.11" || SMAC == "smac=00:80:f4:dc:16:5f") //Origen HMI
+        {
+
+            HMI_VAR.color = Color.red;
+
+        }
         else //Origen desconocido
         {
 
@@ -83,6 +82,12 @@ public class CCM : MonoBehaviour
         {
 
             TSA_VAR.color = Color.red;
+
+        }
+        else if(dst == "dst=10.1.1.11" || DMAC == "dmac=00:80:f4:dc:16:5f") //Origen HMI
+        {
+
+            HMI_VAR.color = Color.red;
 
         }
         else //Destino Desconocido
@@ -128,6 +133,7 @@ public class CCM : MonoBehaviour
         OD_TSA.color = Color.green;
         PLC_TSA.color = Color.green;
         TSA_VAR.color = Color.green;
+        HMI_VAR.color = Color.green;
 
     }
 
