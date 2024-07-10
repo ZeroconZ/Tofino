@@ -247,27 +247,41 @@ public class EventProcessor
 
     }
 
-    public string getProtocol(string logLine)
+    public int getProtocol(string logLine)
     {
 
         string protoPattern = @"proto=(\w+)/(\w+)";
         Match protoMatch = Regex.Match(logLine, protoPattern);
         string proto = protoMatch.Groups[2].Value;
 
-        if(proto == "TCP" && Regex.IsMatch(logLine, "dpt=502"))
+        if(proto == "TCP" && Regex.IsMatch(logLine, "dpt=502")) //Modbus
         {
 
-            Debug.Log("Modbus");
+            Debug.Log("modbus");
+            return 0;
 
         }
-        else
+        else if(proto == "TCP" ) //TCP
+        { 
+
+            Debug.Log("TCP");
+            return 1;
+
+        }
+        else if(proto == "ICMP") //ICMP
         {
 
-            Debug.Log(proto);
+            Debug.Log("Icmp");
+            return 2;
+
+        }
+        else //Genérico
+        {
+
+            return 3;
 
         }
         
-        return proto;
 
     }
 

@@ -13,9 +13,9 @@ public class View : MonoBehaviour
     void Start()
     {
 
-        ViewAll.SetActive(true);
-        ViewModbus.SetActive(false);
-        ViewICMP.SetActive(false);
+        ViewAll.gameObject.SetActive(true);
+        ViewModbus.gameObject.SetActive(false);
+        ViewICMP.gameObject.SetActive(false);
 
     }
 
@@ -25,25 +25,25 @@ public class View : MonoBehaviour
         if(val == 0)
         {
 
-            ViewAll.SetActive(true);
-            ViewModbus.SetActive(false);
-            ViewICMP.SetActive(false);
+            ViewAll.gameObject.SetActive(true);
+            ViewModbus.gameObject.SetActive(false);
+            ViewICMP.gameObject.SetActive(false);
 
         }
         else if(val == 1)
         {
 
-            ViewAll.SetActive(false);
-            ViewModbus.SetActive(true);
-            ViewICMP.SetActive(false);            
+            ViewAll.gameObject.SetActive(false);
+            ViewModbus.gameObject.SetActive(true);
+            ViewICMP.gameObject.SetActive(false);            
 
         }
         else if(val == 2)
         {
 
-            ViewAll.SetActive(false);
-            ViewModbus.SetActive(false);
-            ViewICMP.SetActive(true); 
+            ViewAll.gameObject.SetActive(false);
+            ViewModbus.gameObject.SetActive(false);
+            ViewICMP.gameObject.SetActive(true); 
 
         }
 

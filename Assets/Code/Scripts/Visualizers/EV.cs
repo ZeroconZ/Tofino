@@ -9,16 +9,17 @@ using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventVis : MonoBehaviour//, IDragHandler
+public class EventVis : MonoBehaviour
 {
 
-    //public Canvas canvas;
-    //private RectTransform rectTransform;
     public static EventVis instance;
-    public TextMeshProUGUI TextOnS;
+    public TextMeshProUGUI AllEvents;
+    public TextMeshProUGUI ModbusEvents;
+    //public TextMeshProUGUI TCPEvents;
+    public TextMeshProUGUI ICMPEvents;
+
     EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
-
 
     void Awake()
     {
@@ -30,22 +31,7 @@ public class EventVis : MonoBehaviour//, IDragHandler
             DestroyImmediate(gameObject);
 
     }   
-/*
-    void Start()
-    {
 
-        rectTransform = GetComponent<RectTransform>();
-
-    }
-
-
-    void IDragHandler.OnDrag(PointerEventData eventData)
-    {
-
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
-
-    }
-*/
     public void newLog(string line, int id)
     {
         
@@ -57,7 +43,25 @@ public class EventVis : MonoBehaviour//, IDragHandler
                    .Append(" ")
                    .AppendLine(proLine);
 
-        logProcessor.getProtocol(line);
+        int protoNum = logProcessor.getProtocol(line);
+
+        switch(protoNum)
+        {
+
+            case 0:
+                
+                ModbusEvents.text = logLineConc.ToString();
+                break;
+
+            case 2:
+
+                ICMPEvents.text = logLineConc.ToString();
+                break;
+
+            default:    
+                break;
+
+        }
 
         updText();
 
@@ -66,10 +70,12 @@ public class EventVis : MonoBehaviour//, IDragHandler
     private void updText()
     {
 
-        TextOnS.text = logLineConc.ToString();
+        AllEvents.text = logLineConc.ToString();
 
     }
     
+
+    //necesita trabajo
     private void removeOldLines(int id)
     {
 

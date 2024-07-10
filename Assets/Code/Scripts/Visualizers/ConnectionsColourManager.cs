@@ -14,6 +14,11 @@ public class CCM : MonoBehaviour
     public Material TSA_VAR;
     public Material HMI_VAR;
 
+    public GameObject PLC;
+    public GameObject VAR;
+    public GameObject OD;
+    public GameObject HMI;
+
     void Awake()
     {
 
@@ -44,20 +49,25 @@ public class CCM : MonoBehaviour
 
 
         allGreen();
+        PLC.SetActive(false);
+        VAR.SetActive(false);            
+        HMI.SetActive(false);
+        OD.SetActive(false);       
+        
        
-        if(src == "src=10.1.1.10" || SMAC == "smac=00:80:f4:16:3b:4f") //Origen PLC
+        if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
         {
 
             PLC_TSA.color = Color.red;
 
         }
-        else if(src == "src=10.1.1.12" || SMAC == "smac=00:80:f4:dc:16:5f") //Origen Variador
+        else if(src.Trim() == "src=10.1.1.12" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen Variador
         {
 
             TSA_VAR.color = Color.red;
 
         }
-        else if(src == "src=10.1.1.11" || SMAC == "smac=00:80:f4:dc:16:5f") //Origen HMI
+        else if(src.Trim() == "src=10.1.1.11" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen HMI
         {
 
             HMI_VAR.color = Color.red;
@@ -67,33 +77,50 @@ public class CCM : MonoBehaviour
         {
 
             OD_TSA.color = Color.red;
+            Debug.Log(src);
 
         }
 
 
-        if(dst == "dst=10.1.1.10" || DMAC == "dmac=00:80:f4:16:3b:4f") //Destino PLC
+        if(dst.Trim() == "dst=10.1.1.10" || DMAC.Trim() == "dmac=00:80:f4:16:3b:4f") //Destino PLC
         {
 
             PLC_TSA.color = Color.red;
+            PLC.SetActive(true);
+            VAR.SetActive(false);            
+            HMI.SetActive(false);
+            OD.SetActive(false);
             
 
         }
-        else if(dst == "dst=10.1.1.12" || DMAC == "smac=00:80:f4:dc:16:5f") //Destino Variador
+        else if(dst.Trim() == "dst=10.1.1.12" || DMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Destino Variador
         {
 
             TSA_VAR.color = Color.red;
+            PLC.SetActive(false);
+            VAR.SetActive(true);            
+            HMI.SetActive(false);
+            OD.SetActive(false);
 
         }
-        else if(dst == "dst=10.1.1.11" || DMAC == "dmac=00:80:f4:dc:16:5f") //Origen HMI
+        else if(dst.Trim() == "dst=10.1.1.11" || DMAC.Trim() == "dmac=00:80:f4:dc:16:5f") //Destino HMI
         {
 
             HMI_VAR.color = Color.red;
+            PLC.SetActive(false);
+            VAR.SetActive(false);            
+            HMI.SetActive(true);
+            OD.SetActive(false);
 
         }
         else //Destino Desconocido
         {
 
             OD_TSA.color = Color.red;
+            PLC.SetActive(false);
+            VAR.SetActive(false);
+            HMI.SetActive(false);
+            OD.SetActive(true);
 
         }
         
