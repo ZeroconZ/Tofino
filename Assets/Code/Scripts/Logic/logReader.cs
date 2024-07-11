@@ -84,12 +84,13 @@ public class logReader : MonoBehaviour
         while ((index = logBuilder.ToString().IndexOf("<br>", previousIndex)) != -1)
         {
 
-            if(firstReq == true)
+            if(firstReq)
             {
 
                 line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
                 remitter(line, previousLine);
                 previousIndex = index + 4;
+                
 
             }
             else
@@ -186,6 +187,11 @@ public class logReader : MonoBehaviour
             EventVis.instance.newLog(line, id);
             EventNotif.instance.newNotif(line, id.ToString());
             CCM.instance.newEvent(line);
+
+            if(firstReq == true)
+                MMO.instance.newMode(line);
+            else if(logProcessor.getModeChange(line) == true)
+                MMO.instance.newMode(line);
 
             Debug.Log(line1);
 

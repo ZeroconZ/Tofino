@@ -8,6 +8,7 @@ using TMPro;
 using System.IO;
 using UnityEditor;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public class EventVis : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class EventVis : MonoBehaviour
 
     EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
+    StringBuilder ModbusError = new StringBuilder();
 
     void Awake()
     {
@@ -50,7 +52,7 @@ public class EventVis : MonoBehaviour
 
             case 0:
                 
-                ModbusEvents.text = logLineConc.ToString();
+                ModbusText(line);
                 break;
 
             case 2:
@@ -74,6 +76,17 @@ public class EventVis : MonoBehaviour
 
     }
     
+    private void ModbusText(string line)
+    {
+
+        if(Regex.IsMatch(line, "ACL"))
+        {
+
+            
+
+        }
+
+    }
 
     //necesita trabajo
     private void removeOldLines(int id)
