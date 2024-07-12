@@ -47,7 +47,7 @@ public class MMO : MonoBehaviour
         string date = logProcessor.getDate(logLine);
         tofinoMode = logProcessor.getMode(logLine);
 
-        saveMode(tofinoMode, date);
+        //saveMode(tofinoMode, date);
 
         updMode();
 

@@ -22,6 +22,7 @@ public class EventVis : MonoBehaviour
     EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
     StringBuilder ModbusError = new StringBuilder();
+    StringBuilder ICMPError = new StringBuilder();
 
     void Awake()
     {
@@ -47,17 +48,21 @@ public class EventVis : MonoBehaviour
 
         int protoNum = logProcessor.getProtocol(line);
 
+        string src = logProcessor.whoIs(logProcessor.getSrcIP(line));
+        string dst = logProcessor.whoIs(logProcessor.getDstIP(line));
+
         switch(protoNum)
         {
 
             case 0:
                 
-                ModbusText(line);
+                ModbusText(line, src, dst, id.ToString());
+                Debug.Log("ES MODBUS");
                 break;
 
             case 2:
 
-                ICMPEvents.text = logLineConc.ToString();
+                ICMPText(line, src, dst, id.ToString());
                 break;
 
             default:    
@@ -76,15 +81,41 @@ public class EventVis : MonoBehaviour
 
     }
     
-    private void ModbusText(string line)
+    private void ModbusText(string line, string src, string dst, string id)
     {
 
         if(Regex.IsMatch(line, "ACL"))
         {
 
-            
+            ModbusError.Append(id + "|")
+                       .Append("ACL Violation|")
+                       .Append("source: " + src + ", ")
+                       .AppendLine("destination: " + dst);
+
+            ModbusEvents.text = ModbusError.ToString();
 
         }
+        else
+        {
+
+            ModbusError.Append(id + "|")
+                       .Append(src)
+                       .Append(" cannot " + logProcessor.getError(line) + " from ")
+                       .AppendLine(dst);
+
+        }
+
+    }
+
+    private void ICMPText(string line, string src, string dst, string id)
+    {
+
+        ICMPError.Append(id + "|")
+                 .Append(src)
+                 .Append(" cannot reach ")
+                 .Append(dst);
+
+        ICMPEvents.text = ICMPError.ToString();
 
     }
 
