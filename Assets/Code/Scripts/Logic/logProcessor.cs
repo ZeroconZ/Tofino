@@ -117,26 +117,6 @@ public class EventProcessor
 
     }
 
-    public string whoIs(string IP)
-    {
-
-        Dictionary<string, string> IPs = new Dictionary<string, string>();
-
-        IPs.Add("10.1.1.10", "PLC");
-        IPs.Add("10.1.1.12", "DRIVER");
-        IPs.Add("10.1.1.11", "HMI");
-
-        Match IPMatch = Regex.Match(IP, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}");
-        string IPvalue = IPMatch.Value;
-
-        if(IPs.TryGetValue(IPvalue, out string itIs))
-            return itIs;
-
-        else   
-            return IPvalue;
-
-    }
-
     public string eventProcessor(string logLine)
     {
 
@@ -277,19 +257,21 @@ public class EventProcessor
         if(proto == "TCP" && Regex.IsMatch(logLine, "dpt=502")) //Modbus
         {
 
+            Debug.Log("modbus");
             return 0;
 
         }
         else if(proto == "TCP" ) //TCP
         { 
 
+            Debug.Log("TCP");
             return 1;
 
         }
         else if(proto == "ICMP") //ICMP
         {
 
-            Debug.Log("ICMP");
+            Debug.Log("Icmp");
             return 2;
 
         }
@@ -300,6 +282,7 @@ public class EventProcessor
 
         }
         
+
     }
 
     private string modbusErrors(int code)

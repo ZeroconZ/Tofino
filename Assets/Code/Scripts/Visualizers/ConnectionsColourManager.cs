@@ -77,6 +77,7 @@ public class CCM : MonoBehaviour
         {
 
             OD_TSA.color = Color.red;
+            Debug.Log(src);
 
         }
 

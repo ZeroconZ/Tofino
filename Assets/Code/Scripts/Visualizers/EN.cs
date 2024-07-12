@@ -9,9 +9,11 @@ using System.IO;
 using UnityEditor;
 using System.Text;
 
-public class EventNotif : MonoBehaviour
+public class EventNotif : MonoBehaviour//, IDragHandler
 {
 
+    //public Canvas canvas;
+    //private RectTransform rectTransform;
     public static EventNotif instance;
     public TextMeshProUGUI ErrorNotif;
     public TextMeshProUGUI MoreInfo;
@@ -31,7 +33,22 @@ public class EventNotif : MonoBehaviour
             DestroyImmediate(gameObject);
 
     }       
+/*
+    void Start()
+    {
 
+        rectTransform = GetComponent<RectTransform>();
+
+
+    }
+
+    void IDragHandler.OnDrag(PointerEventData eventData)
+    {
+
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+
+    }
+*/
     public void newNotif(string line, string idS)
     {
         
@@ -47,5 +64,7 @@ public class EventNotif : MonoBehaviour
         MoreInfo.text = "Read line " + id + " for more information";
 
     }
+
+
 
 }
