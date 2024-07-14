@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
-using UnityEngine.EventSystems;
 using TMPro;
-using System.IO;
-using UnityEditor;
 using System.Text;
 using System.Text.RegularExpressions;
+
 
 public class EventVis : MonoBehaviour
 {
@@ -16,13 +14,19 @@ public class EventVis : MonoBehaviour
     public static EventVis instance;
     public TextMeshProUGUI AllEvents;
     public TextMeshProUGUI ModbusEvents;
-    //public TextMeshProUGUI TCPEvents;
+    public TextMeshProUGUI SystemEvents;
     public TextMeshProUGUI ICMPEvents;
 
     EventProcessor logProcessor = new EventProcessor();
     StringBuilder logLineConc = new StringBuilder();
     StringBuilder ModbusError = new StringBuilder();
     StringBuilder ICMPError = new StringBuilder();
+    StringBuilder SystemInfo = new StringBuilder();
+
+    public UnityEngine.UI.Button ToggleACL;
+    private bool ViewModbusACLEvents = true;
+    public Sprite ACLView, noACLView;
+    
 
     void Awake()
     {
@@ -65,7 +69,11 @@ public class EventVis : MonoBehaviour
                 ICMPText(line, src, dst, id.ToString());
                 break;
 
-            default:    
+            case 3:
+
+                if(Regex.IsMatch(logProcessor.getError(line), "System") || Regex.IsMatch(logProcessor.getError(line), "Logger"))
+                    SystemText(line, id.ToString());    
+
                 break;
 
         }
@@ -81,10 +89,32 @@ public class EventVis : MonoBehaviour
 
     }
     
+    public void ACLModbusVisibility()
+    {
+
+        if(ViewModbusACLEvents == true)
+        {
+
+            ViewModbusACLEvents = false;
+            ToggleACL.image.sprite = ACLView;
+            Debug.Log("ACL on");
+
+        }
+        else   
+        {
+
+            ViewModbusACLEvents = true;
+            ToggleACL.image.sprite = noACLView;
+            Debug.Log("ACL off");
+
+        }
+
+    }
+
     private void ModbusText(string line, string src, string dst, string id)
     {
 
-        if(Regex.IsMatch(line, "ACL"))
+        if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
         {
 
             ModbusError.Append(id + "|")
@@ -113,9 +143,19 @@ public class EventVis : MonoBehaviour
         ICMPError.Append(id + "|")
                  .Append(src)
                  .Append(" cannot reach ")
-                 .Append(dst);
+                 .AppendLine(dst);
 
         ICMPEvents.text = ICMPError.ToString();
+
+    }
+
+    private void SystemText(string line, string id)
+    {
+
+        SystemInfo.Append(id + "|")
+                  .AppendLine(logProcessor.getError(line));
+        
+        SystemEvents.text = SystemInfo.ToString();
 
     }
 
