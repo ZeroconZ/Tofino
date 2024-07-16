@@ -41,7 +41,7 @@ public class logReader : MonoBehaviour
         while(true)
         {
 
-            yield return StartCoroutine(APIReader());
+            yield return StartCoroutine(APIRequest());
 
             yield return new WaitForSeconds(0.5f);
 
@@ -50,7 +50,7 @@ public class logReader : MonoBehaviour
     }
 
 
-    private IEnumerator APIReader()
+    private IEnumerator APIRequest()
     {
 
         UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino-all");
