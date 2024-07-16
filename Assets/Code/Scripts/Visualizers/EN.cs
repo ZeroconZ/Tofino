@@ -38,6 +38,8 @@ public class EventNotif : MonoBehaviour
         error = logProcessor.getError(line);
         id = idS;
 
+        updText();
+
     }
 
     private void updText()

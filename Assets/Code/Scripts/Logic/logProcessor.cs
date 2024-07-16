@@ -229,12 +229,13 @@ public class EventProcessor
         else if(Regex.IsMatch(logLine, ModbusPattern))
         {
 
-            string patternCode = @"code (\d{2})";
+            string patternCode = @"code (\d{1,2})";
             Match codeMatch = Regex.Match(logLine, patternCode);
             string code = codeMatch.Value;
 
-            string patternError = @"\d{2}";
+            string patternError = @"\d{1,2}";
             Match errorMatch = Regex.Match(code, patternError);
+            Debug.Log(errorMatch);
             int error = Int32.Parse(errorMatch.Value);
 
             code = modbusErrors(error);

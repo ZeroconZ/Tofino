@@ -92,19 +92,19 @@ public class EventVis : MonoBehaviour
     public void ACLModbusVisibility()
     {
 
-        if(ViewModbusACLEvents == true)
+        if(ViewModbusACLEvents == false)
         {
 
-            ViewModbusACLEvents = false;
             ToggleACL.image.sprite = ACLView;
+            ViewModbusACLEvents = true;
             Debug.Log("ACL on");
 
         }
         else   
         {
 
-            ViewModbusACLEvents = true;
             ToggleACL.image.sprite = noACLView;
+            ViewModbusACLEvents = false;
             Debug.Log("ACL off");
 
         }
@@ -125,6 +125,12 @@ public class EventVis : MonoBehaviour
             ModbusEvents.text = ModbusError.ToString();
 
         }
+        else if(!ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
+        {
+
+            return;
+
+        }
         else
         {
 
@@ -132,6 +138,7 @@ public class EventVis : MonoBehaviour
                        .Append(src)
                        .Append(" cannot " + logProcessor.getError(line) + " from ")
                        .AppendLine(dst);
+
 
         }
 
