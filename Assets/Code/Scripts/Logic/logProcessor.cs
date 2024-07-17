@@ -235,7 +235,6 @@ public class EventProcessor
 
             string patternError = @"\d{1,2}";
             Match errorMatch = Regex.Match(code, patternError);
-            Debug.Log(errorMatch);
             int error = Int32.Parse(errorMatch.Value);
 
             code = modbusErrors(error);

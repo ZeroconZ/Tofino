@@ -84,20 +84,19 @@ public class logReader : MonoBehaviour
         while ((index = logBuilder.ToString().IndexOf("<br>", previousIndex)) != -1)
         {
 
+            line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
+            previousIndex = index + 4;
+
             if(firstReq)
             {
 
-                line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
-                remitter(line, previousLine);
-                previousIndex = index + 4;
-                
+                MMO.instance.newMode(line);
+                firstReq = false;
+                return;                
 
             }
             else
             {
-
-                line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
-                previousIndex = index + 4;
 
                 switch(dateCompare(lastLineDate, logProcessor.getDate(line)))
                 {
@@ -110,26 +109,28 @@ public class logReader : MonoBehaviour
                         break;
 
                     case 2:
-                        if(lastLineProcc == logProcessor.eventProcessor(line))
-                            break;
+                        string line1 = lastLineProcc.Trim();
+                        string line2 = logProcessor.eventProcessor(line).Trim();
 
-                        else
+                        if(line1 != line2)
                         {
 
                             remitter(line, previousLine);
                             break;
 
                         }
-                        
+
+                        break;
+   
                     default:
                         Debug.Log("Error");
                         break;
 
                 }
 
-                previousLine = line;
-
             }
+
+            previousLine = line;
 
         }
 
@@ -153,8 +154,8 @@ public class logReader : MonoBehaviour
             return 0;
 
 
-        DateTime refDate = DateTime.ParseExact(oldDate, "MMM  d HH:mm:ss", CultureInfo.InvariantCulture);
-        DateTime toCompDate = DateTime.ParseExact(newDate, "MMM  d HH:mm:ss", CultureInfo.InvariantCulture);
+        DateTime refDate = DateTime.ParseExact(oldDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
+        DateTime toCompDate = DateTime.ParseExact(newDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
 
         if(refDate > toCompDate)
             return 0;
@@ -188,9 +189,7 @@ public class logReader : MonoBehaviour
             EventNotif.instance.newNotif(line, id.ToString());
             CCM.instance.newEvent(line);
 
-            if(firstReq == true)
-                MMO.instance.newMode(line);
-            else if(logProcessor.getModeChange(line) == true)
+            if(logProcessor.getModeChange(line) == true)
                 MMO.instance.newMode(line);
 
             Debug.Log(line1);

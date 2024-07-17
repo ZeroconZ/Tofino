@@ -60,8 +60,10 @@ public class EventVis : MonoBehaviour
 
             case 0:
                 
+                if(Regex.IsMatch(line, "ACL"))
+                    Debug.Log("ES ACL");
+
                 ModbusText(line, src, dst, id.ToString());
-                Debug.Log("ES MODBUS");
                 break;
 
             case 2:
@@ -114,45 +116,59 @@ public class EventVis : MonoBehaviour
     private void ModbusText(string line, string src, string dst, string id)
     {
 
-        if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
-        {
-
-            ModbusError.Append(id + "|")
-                       .Append("ACL Violation|")
-                       .Append("source: " + src + ", ")
-                       .AppendLine("destination: " + dst);
-
-            ModbusEvents.text = ModbusError.ToString();
-
-        }
-        else if(!ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
-        {
-
-            return;
-
-        }
-        else
+        if(Regex.IsMatch(line, "Tofino Modbus/TCP Enforcer"))
         {
 
             ModbusError.Append(id + "|")
                        .Append(src)
                        .Append(" cannot " + logProcessor.getError(line) + " from ")
                        .AppendLine(dst);
-
+            Debug.Log("Error funcion no permitida");
+            ModbusEvents.text = ModbusError.ToString();
 
         }
+        else if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
+        {
+
+            ModbusError.Append(id + "|")
+                       .Append("ACL Violation|")
+                       .Append("source: " + src + ", ")
+                       .AppendLine("destination: " + dst);
+            ModbusEvents.text = ModbusError.ToString();
+
+        }
+
+
+        return;
 
     }
 
     private void ICMPText(string line, string src, string dst, string id)
     {
 
-        ICMPError.Append(id + "|")
-                 .Append(src)
-                 .Append(" cannot reach ")
-                 .AppendLine(dst);
+        if(Regex.IsMatch(line, "incorrect network address"))
+        {
 
-        ICMPEvents.text = ICMPError.ToString();
+            ICMPError.Append(id + "|")
+                    .Append(src)
+                    .Append(" cannot reach ")
+                    .AppendLine(dst);
+
+            ICMPEvents.text = ICMPError.ToString();
+
+        }
+        else
+        {
+
+            ICMPError.Append(id + "|")
+                    .Append(logProcessor.getMsg(line))
+                    .Append("source:" +src)
+                    .AppendLine(", destination:" + dst);
+
+            ICMPEvents.text = ICMPError.ToString();
+
+        }
+
 
     }
 
