@@ -20,7 +20,7 @@ public class logReader : MonoBehaviour
     string password = "TofinoDT_2024";
 
     string lastLineDate;
-    string lastLineProcc;
+    string oldLine = string.Empty;
     
     int id;
     bool firstReq = true;
@@ -43,7 +43,7 @@ public class logReader : MonoBehaviour
 
             yield return StartCoroutine(APIRequest());
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.060f);
 
         }
 
@@ -53,7 +53,7 @@ public class logReader : MonoBehaviour
     private IEnumerator APIRequest()
     {
 
-        UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino-all");
+        UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino");
 
         string auth = username + ":" + password;
         string authHeaderValue = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(auth));
@@ -65,11 +65,11 @@ public class logReader : MonoBehaviour
             Debug.Log("Error" + webReader.error);
 
         else
-            divideLines(webReader.downloadHandler.text);
+            eventCompare(webReader.downloadHandler.text);
 
     }
 
-
+/*
     private void divideLines(string logData)
     {
 
@@ -110,7 +110,7 @@ public class logReader : MonoBehaviour
 
                     case 2:
                         string line1 = lastLineProcc.Trim();
-                        string line2 = logProcessor.eventProcessor(line).Trim();
+                        string line2 = line.Trim();
 
                         if(line1 != line2)
                         {
@@ -134,21 +134,39 @@ public class logReader : MonoBehaviour
 
         }
 
-        firstReq = false;
-
         if (previousIndex < logBuilder.Length)
         {
 
             lastLineDate = logProcessor.getDate(previousLine);
-            lastLineProcc = logProcessor.eventProcessor(previousLine);
+            lastLineProcc = line;
 
         }
 
     }
+*/
 
+    private void eventCompare(string logData)
+    {
+
+        if(firstReq)
+        {
+
+            MMO.instance.newMode(logData);
+            firstReq = false;
+
+        }
+
+        if(logData.Trim() != oldLine.Trim())
+            remitter(logData);
+
+        oldLine = logData;
+
+    }
 
     private int dateCompare(string oldDate, string newDate)
     {
+
+        Debug.Log("Fecha vieja: " + oldDate + " Fecha nueva: " + newDate);
 
         if(string.IsNullOrEmpty(oldDate) || string.IsNullOrEmpty(newDate))
             return 0;
@@ -169,20 +187,8 @@ public class logReader : MonoBehaviour
     }
 
 
-    private void remitter(string line, string previousLine)
+    private void remitter(string line)
     {
-
-        string line1 = logProcessor.eventProcessor(line);
-        string previousLine1 = logProcessor.eventProcessor(previousLine);
-
-        if(line.Equals(previousLine))
-        {
-
-            return;
-
-        }
-        else
-        {
 
             id++;
             EventVis.instance.newLog(line, id);
@@ -192,9 +198,7 @@ public class logReader : MonoBehaviour
             if(logProcessor.getModeChange(line) == true)
                 MMO.instance.newMode(line);
 
-            Debug.Log(line1);
-
-        }
+            Debug.Log(line);
 
     }
 

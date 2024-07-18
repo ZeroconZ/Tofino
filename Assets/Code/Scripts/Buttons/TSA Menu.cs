@@ -24,7 +24,7 @@ public class TSAMenu : MonoBehaviour
 
         EV.gameObject.SetActive(!EV.gameObject.activeSelf);
         EN.gameObject.SetActive(!EN.gameObject.activeSelf);
-        Debug.Log("Se prendio");
+
     }
 
 

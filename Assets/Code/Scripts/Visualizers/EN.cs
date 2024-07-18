@@ -8,6 +8,8 @@ using TMPro;
 using System.IO;
 using UnityEditor;
 using System.Text;
+using System;
+using System.Text.RegularExpressions;
 
 public class EventNotif : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class EventNotif : MonoBehaviour
 
     EventProcessor logProcessor = new EventProcessor();
 
-    private string error;
+    StringBuilder error = new StringBuilder();
     private string id;
 
     void Awake()
@@ -35,7 +37,34 @@ public class EventNotif : MonoBehaviour
     public void newNotif(string line, string idS)
     {
         
-        error = logProcessor.getError(line);
+        if(Regex.IsMatch(line, "System") || Regex.IsMatch(logProcessor.getError(line), "Logger"))
+        {
+
+            error.Append(logProcessor.getError(line));
+
+        }
+        else
+        {
+
+            if(!logProcessor.isSrc(line) || !logProcessor.isDst(line))
+            {
+
+                error.AppendLine(logProcessor.getError(line))
+                    .AppendLine("Source: unknown")
+                    .Append("Destination: unknown");
+
+            }
+            else
+            {
+
+                error.AppendLine(logProcessor.getError(line))
+                    .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))
+                    .Append("Destination: " + logProcessor.whoIs(logProcessor.getDstIP(line)));
+
+            }
+
+        }
+
         id = idS;
 
         updText();
@@ -45,8 +74,10 @@ public class EventNotif : MonoBehaviour
     private void updText()
     {
 
-        ErrorNotif.text = error;
-        MoreInfo.text = "Read line " + id + " for more information";
+        ErrorNotif.text = error.ToString();
+        MoreInfo.text = "\nRead line " + id + " for more information";
+
+        error.Clear();
 
     }
 

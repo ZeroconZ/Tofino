@@ -73,7 +73,7 @@ public class EventProcessor
 
     }
 
-    private bool isSrc(string logLine)
+    public bool isSrc(string logLine)
     {
 
         string srcPattern = @"src=([^ ]+)";
@@ -84,7 +84,7 @@ public class EventProcessor
                 
     }
 
-     private bool isDst(string logLine)
+     public bool isDst(string logLine)
     {
 
         string dstPattern = @"dst=([^ ]+)";
@@ -125,6 +125,7 @@ public class EventProcessor
         IPs.Add("10.1.1.10", "PLC");
         IPs.Add("10.1.1.12", "DRIVER");
         IPs.Add("10.1.1.11", "HMI");
+        IPs.Add("10.1.1.101", "PC");
 
         Match IPMatch = Regex.Match(IP, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}");
         string IPvalue = IPMatch.Value;
@@ -133,7 +134,12 @@ public class EventProcessor
             return itIs;
 
         else   
+        {
+
+            Debug.Log(IPvalue);
             return IPvalue;
+
+        }
 
     }
 
@@ -223,7 +229,7 @@ public class EventProcessor
         if(Regex.IsMatch(logLine, ACLPattern))
         {
 
-            return "Error de ACL";
+            return "ACL Error";
 
         }
         else if(Regex.IsMatch(logLine, ModbusPattern))
@@ -288,8 +294,7 @@ public class EventProcessor
         }
         else if(proto == "ICMP") //ICMP
         {
-
-            Debug.Log("ICMP");
+            
             return 2;
 
         }
@@ -364,6 +369,9 @@ public class EventProcessor
 
             case 43:
                 return "Read Device Identification";
+
+            case 90:
+                return "Unity Programming/OFS";
 
             default:
                 return "Unknown Error";
