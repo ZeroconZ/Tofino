@@ -22,16 +22,16 @@ public class EventVis : MonoBehaviour
     EventProcessor logProcessor = new EventProcessor();
 
     //Stringbuilders
-    StringBuilder AllMsgSB = new StringBuilder(100);
-    StringBuilder ModbusSB = new StringBuilder(100);
-    StringBuilder ICMPSB = new StringBuilder(100);
-    StringBuilder SystemSB = new StringBuilder(100);
+    StringBuilder AllMsgSB = new StringBuilder();
+    StringBuilder ModbusSB = new StringBuilder();
+    StringBuilder ICMPSB = new StringBuilder();
+    StringBuilder SystemSB = new StringBuilder();
 
     //Queues for each event visualizer
-    Queue<string> AllMessages;
-    Queue<string> ModbusMessages;
-    Queue<string> ICMPMessages;
-    Queue<string> SystemMessages;
+    Queue<string> AllMessages = new Queue<string>();
+    Queue<string> ModbusMessages = new Queue<string>();
+    Queue<string> ICMPMessages = new Queue<string>();
+    Queue<string> SystemMessages = new Queue<string>();
 
     //Elements to toggle ACL modbus events
     public UnityEngine.UI.Button ToggleACL;
@@ -114,7 +114,15 @@ public class EventVis : MonoBehaviour
                 .Append(" ")
                 .AppendLine(line);
 
-        AllMessages.Enqueue(AllMsgSB.ToString());
+        if(AllMessages.Count > 100)
+        {
+
+            AllMessages.Dequeue();
+            AllMessages.Enqueue(AllMsgSB.ToString());
+
+        }
+        else
+            AllMessages.Enqueue(AllMsgSB.ToString());
 
         AllMsgSB.Clear();
 
@@ -137,7 +145,6 @@ public class EventVis : MonoBehaviour
                        .Append(logProcessor.getError(line) + "|")
                        .Append("source: " + src)
                        .AppendLine(", destination: " + dst);
-            ModbusEvents.text = ModbusSB.ToString();
 
         }
         else if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
@@ -147,8 +154,7 @@ public class EventVis : MonoBehaviour
                        .Append("ACL Violation|")
                        .Append("source: " + src + ", ")
                        .AppendLine("destination: " + dst);
-            ModbusEvents.text = ModbusSB.ToString();
-
+            
         }
         else if(!Regex.IsMatch(line, "ACL"))
         {
@@ -157,10 +163,27 @@ public class EventVis : MonoBehaviour
                        .Append(logProcessor.getError(line) + "|")
                        .Append("source: " + src + ", ")
                        .AppendLine("destination: " + dst);
-            ModbusEvents.text = ModbusSB.ToString();         
-
+                   
         }
 
+        if(ModbusMessages.Count > 100)
+        {
+
+            ModbusMessages.Dequeue();
+            ModbusMessages.Enqueue(ModbusSB.ToString());
+
+        }
+        else
+            ModbusMessages.Enqueue(ModbusSB.ToString());
+
+        ModbusSB.Clear();
+
+        foreach(string Event in ModbusMessages)
+            ModbusSB.AppendLine(Event);
+
+        ModbusEvents.text = ModbusSB.ToString();
+
+        ModbusSB.Clear();
 
         return;
 
@@ -177,8 +200,6 @@ public class EventVis : MonoBehaviour
                     .Append(" cannot reach ")
                     .AppendLine(dst);
 
-            ICMPEvents.text = ICMPSB.ToString();
-
         }
         else
         {
@@ -188,19 +209,53 @@ public class EventVis : MonoBehaviour
                     .Append("source:" +src)
                     .AppendLine(", destination:" + dst);
 
-            ICMPEvents.text = ICMPSB.ToString();
+        }
+
+        if(ICMPMessages.Count > 100)
+        {
+
+            ICMPMessages.Dequeue();
+            ICMPMessages.Enqueue(ICMPSB.ToString());
 
         }
+        else
+            ICMPMessages.Enqueue(ICMPSB.ToString());
+
+        ICMPSB.Clear();
+
+        foreach(string Event in ICMPMessages)
+            ICMPSB.AppendLine(Event);
+
+        ICMPEvents.text = ICMPSB.ToString();
+
+        ICMPSB.Clear();
 
     }
 
     private void SystemText(string line, string id)
     {
 
+        if(SystemMessages.Count > 100)
+        {
+
+            SystemMessages.Dequeue();
+            SystemMessages.Enqueue(SystemSB.ToString());
+
+        }
+        else
+            SystemMessages.Enqueue(SystemSB.ToString());
+
+        SystemSB.Clear();
+
+        foreach(string Event in SystemMessages)
+            SystemSB.AppendLine(Event);
+
         SystemSB.Append(id + "|")
                   .AppendLine(logProcessor.getError(line));
         
         SystemEvents.text = SystemSB.ToString();
+
+        SystemSB.Clear();
 
     }
 

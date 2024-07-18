@@ -9,14 +9,14 @@ public class CCM : MonoBehaviour
     public static CCM instance;
     EventProcessor logProcessor = new EventProcessor();
     
-    public Material OD_TSA;
+    public Material PC_TSA;
     public Material PLC_TSA;
     public Material TSA_VAR;
     public Material HMI_VAR;
 
     public GameObject PLC;
     public GameObject VAR;
-    public GameObject OD;
+    public GameObject PC;
     public GameObject HMI;
 
     void Awake()
@@ -52,7 +52,7 @@ public class CCM : MonoBehaviour
         PLC.SetActive(false);
         VAR.SetActive(false);            
         HMI.SetActive(false);
-        OD.SetActive(false);       
+        PC.SetActive(false);       
         
        
         if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
@@ -73,10 +73,10 @@ public class CCM : MonoBehaviour
             HMI_VAR.color = Color.red;
 
         }
-        else //Origen desconocido
+        else if(src.Trim() == "src=10.1.1.101" || SMAC.Trim() == "smac=e0:d5:5e:df:e6:1a") //Origen desconocido
         {
 
-            OD_TSA.color = Color.red;
+            PC_TSA.color = Color.red;
 
         }
 
@@ -88,7 +88,7 @@ public class CCM : MonoBehaviour
             PLC.SetActive(true);
             VAR.SetActive(false);            
             HMI.SetActive(false);
-            OD.SetActive(false);
+            PC.SetActive(false);
             
 
         }
@@ -99,7 +99,7 @@ public class CCM : MonoBehaviour
             PLC.SetActive(false);
             VAR.SetActive(true);            
             HMI.SetActive(false);
-            OD.SetActive(false);
+            PC.SetActive(false);
 
         }
         else if(dst.Trim() == "dst=10.1.1.11" || DMAC.Trim() == "dmac=00:80:f4:dc:16:5f") //Destino HMI
@@ -109,17 +109,17 @@ public class CCM : MonoBehaviour
             PLC.SetActive(false);
             VAR.SetActive(false);            
             HMI.SetActive(true);
-            OD.SetActive(false);
+            PC.SetActive(false);
 
         }
-        else //Destino Desconocido
+        else if(src.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino Desconocido
         {
 
-            OD_TSA.color = Color.red;
+            PC_TSA.color = Color.red;
             PLC.SetActive(false);
             VAR.SetActive(false);
             HMI.SetActive(false);
-            OD.SetActive(true);
+            PC.SetActive(true);
 
         }
         
@@ -156,7 +156,7 @@ public class CCM : MonoBehaviour
     private void allGreen()
     {
 
-        OD_TSA.color = Color.green;
+        PC_TSA.color = Color.green;
         PLC_TSA.color = Color.green;
         TSA_VAR.color = Color.green;
         HMI_VAR.color = Color.green;

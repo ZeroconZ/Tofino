@@ -12,7 +12,8 @@ public class FPS : MonoBehaviour
     {
 
         InvokeRepeating("GetFPS", 0, 1f);
-        
+        Application.targetFrameRate = 60;
+
     }
 
     void GetFPS()
