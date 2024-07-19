@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1354,7 +1354,7 @@ GameObject:
   - component: {fileID: 252480566}
   - component: {fileID: 252480565}
   m_Layer: 5
-  m_Name: dst_VAR
+  m_Name: dst_PLC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4340,8 +4340,8 @@ MonoBehaviour:
   PLC_TSA: {fileID: 2100000, guid: ce38fff568e36eb419e8c1c02b30c893, type: 2}
   TSA_VAR: {fileID: 2100000, guid: b95439c1e08aad742a4f980f4cfb4530, type: 2}
   HMI_VAR: {fileID: 2100000, guid: 6bffab811d0ccb34cbd8f07911ea919e, type: 2}
-  PLC: {fileID: 1808805241}
-  VAR: {fileID: 252480563}
+  PLC: {fileID: 252480563}
+  VAR: {fileID: 1808805241}
   PC: {fileID: 973729538}
   HMI: {fileID: 1624388973}
 --- !u!4 &937369889
@@ -8475,7 +8475,7 @@ GameObject:
   - component: {fileID: 1808805244}
   - component: {fileID: 1808805243}
   m_Layer: 5
-  m_Name: dst_PLC
+  m_Name: dst_VAR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

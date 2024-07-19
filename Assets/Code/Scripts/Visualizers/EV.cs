@@ -110,8 +110,7 @@ public class EventVis : MonoBehaviour
     private void AllText(string line, string id)
     {
 
-        AllMsgSB.Append(id)
-                .Append(" ")
+        AllMsgSB.Append(id + "|")
                 .AppendLine(line);
 
         if(AllMessages.Count > 100)
@@ -151,7 +150,7 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                       .Append("ACL Violation|")
+                       .Append("Cannot reach via Modbus|")
                        .Append("source: " + src + ", ")
                        .AppendLine("destination: " + dst);
             
@@ -235,6 +234,9 @@ public class EventVis : MonoBehaviour
     private void SystemText(string line, string id)
     {
 
+        SystemSB.Append(id + "|")
+                  .AppendLine(logProcessor.getError(line));
+
         if(SystemMessages.Count > 100)
         {
 
@@ -249,9 +251,6 @@ public class EventVis : MonoBehaviour
 
         foreach(string Event in SystemMessages)
             SystemSB.AppendLine(Event);
-
-        SystemSB.Append(id + "|")
-                  .AppendLine(logProcessor.getError(line));
         
         SystemEvents.text = SystemSB.ToString();
 
