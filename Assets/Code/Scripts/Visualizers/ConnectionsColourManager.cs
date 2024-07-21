@@ -35,6 +35,7 @@ public class CCM : MonoBehaviour
     {
 
         allGreen();
+        hideArrow();
 
     }
 
@@ -49,10 +50,7 @@ public class CCM : MonoBehaviour
 
 
         allGreen();
-        PLC.SetActive(false);
-        VAR.SetActive(false);            
-        HMI.SetActive(false);
-        PC.SetActive(false);       
+        hideArrow();      
         
        
         if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
@@ -112,7 +110,7 @@ public class CCM : MonoBehaviour
             PC.SetActive(false);
 
         }
-        else if(src.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino Desconocido
+        else if(dst.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino PC
         {
 
             PC_TSA.color = Color.red;
@@ -120,6 +118,8 @@ public class CCM : MonoBehaviour
             VAR.SetActive(false);
             HMI.SetActive(false);
             PC.SetActive(true);
+
+            Debug.Log(dst);
 
         }
         
@@ -153,13 +153,23 @@ public class CCM : MonoBehaviour
 
     }
 
-    private void allGreen()
+    public void allGreen()
     {
 
         PC_TSA.color = Color.green;
         PLC_TSA.color = Color.green;
         TSA_VAR.color = Color.green;
         HMI_VAR.color = Color.green;
+
+    }
+
+    public void hideArrow()
+    {
+
+        PLC.SetActive(false);
+        VAR.SetActive(false);            
+        HMI.SetActive(false);
+        PC.SetActive(false);
 
     }
 
