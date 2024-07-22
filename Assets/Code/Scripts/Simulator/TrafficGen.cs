@@ -156,7 +156,6 @@ public class TrafficGen : MonoBehaviour
             EventNotif.instance.newNotif(line, id.ToString());
             MMO.instance.newMode(line);
 
-            Debug.Log(line);
             Event.Clear();
 
     }

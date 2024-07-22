@@ -70,7 +70,7 @@ public class MMO : MonoBehaviour
     void OnDestroy()
     {
 
-        writer.Dispose();
+        //writer.Dispose();
 
     }
 
