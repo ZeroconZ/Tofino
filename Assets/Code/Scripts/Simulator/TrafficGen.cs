@@ -67,7 +67,7 @@ public class TrafficGen : MonoBehaviour
     {
 
         var msg = (src, dst, proto);
-
+        print("TE LLAMO");
         if(src != dst)
         {
 

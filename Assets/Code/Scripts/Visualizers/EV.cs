@@ -33,7 +33,7 @@ public class EventVis : MonoBehaviour
     Queue<string> ICMPMessages = new Queue<string>();
     Queue<string> SystemMessages = new Queue<string>();
 
-    //Elements to toggle ACL modbus events
+    //UI elements to toggle ACL modbus events
     public UnityEngine.UI.Button ToggleACL;
     private bool ViewModbusACLEvents = true;
     public Sprite ACLView, noACLView;
@@ -141,18 +141,18 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                       .Append(logProcessor.getError(line) + "|")
-                       .Append("source: " + src)
-                       .AppendLine(", destination: " + dst);
+                    .Append(logProcessor.getError(line) + "|")
+                    .Append("source: " + src)
+                    .AppendLine(", destination: " + dst);
 
         }
         else if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
         {
 
             ModbusSB.Append(id + "|")
-                       .Append("Cannot reach via Modbus|")
-                       .Append("source: " + src + ", ")
-                       .AppendLine("destination: " + dst);
+                    .Append("Cannot reach via Modbus|")
+                    .Append("source: " + src + ", ")
+                    .AppendLine("destination: " + dst);
             
         }
         else if(!Regex.IsMatch(line, "ACL"))

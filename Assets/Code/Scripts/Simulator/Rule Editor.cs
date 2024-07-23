@@ -13,17 +13,30 @@ public class RE : MonoBehaviour
 
     public TMP_Dropdown rulesDisplay;
 
+
+    //Rules values
     int id;
     int src;
     int dst;
     int proto;
     int block;
-    int edit_create;
+    int ruleDisplayIndex;
 
+    //Dictionary where rules are stored
     Dictionary<int,(int srcR, int dstR, int protoR, int blockR)> Rules = new Dictionary<int,(int, int, int, int)>();
+    //Dictionary that relates devices variables to their names
     Dictionary<int, string> Devices = new Dictionary<int, string>();
 
     StringBuilder ruleBuilder = new StringBuilder();
+
+    //UI elements to move rules up or down
+    bool Arrows = false;
+    public UnityEngine.UI.Button ArrowUp;
+    public UnityEngine.UI.Button ArrowDown;
+    public Sprite ArrowUpActive, ArrowUpDeactiv, ArrowDownActive, ArrowDownDeactiv;
+
+    //MovingRules elements
+    public TMP_Dropdown rules;
 
     void Awake()
     {
@@ -48,11 +61,13 @@ public class RE : MonoBehaviour
 
     }
 
-    //Creating a rule
+    //Values for a rule
     public void SrcDev(int val)
     {
 
         src = val;
+
+        return;
 
     }
 
@@ -61,12 +76,16 @@ public class RE : MonoBehaviour
 
         dst = val;
 
+        return;
+
     }
 
     public void ProtoRule(int val)
     {
 
         proto = val;
+
+        return;
 
     }
 
@@ -75,16 +94,20 @@ public class RE : MonoBehaviour
 
         block = val;
 
+        return;
+
     }
 
     public void Create_Edit(int val)
     {
 
-        edit_create = val;
+        ruleDisplayIndex = val;
+
+        return;
         
     }
 
-    public void Apply()
+    public void CreateRule()
     {
 
         if(src == dst)
@@ -93,74 +116,108 @@ public class RE : MonoBehaviour
             Debug.Log("Source and Destiny cannot be the same");
 
         }
-        else if(Rules.ContainsValue((src, dst, proto, 1)) || Rules.ContainsValue((src, dst, proto, 0)))
-        {
-            
-            Debug.Log("Repe");
-
-        }
         else
         {
 
-            if(edit_create == 0)
+            if(ruleDisplayIndex == 0)
             {    
 
-                id++;
+                if(Rules.ContainsValue((src, dst, proto, 1)) || Rules.ContainsValue((src, dst, proto, 0)))
+                {
+                    
+                    Debug.Log("Repe");
 
-                Rules.Add(id, (src, dst, proto, block));
-                Debug.Log("Regla: " + id + " " + Rules[id]);
+                }
+                else
+                {
+
+                    id++;
+
+                    Rules.Add(id, (src, dst, proto, block));
+                    Debug.Log("Rule: " + id + " " + Rules[id]);
+                    AddToDropDown(TextDisplayRule(id, (src, dst, proto, block)));
+                
+                }
 
             }
             else
             {
 
-                Rules[edit_create] = (src, dst, proto, block);
-                Debug.Log("Se editó la regla " + id + " " + Rules[id]);
+                Rules[ruleDisplayIndex] = (src, dst, proto, block);
+                Debug.Log("Edited rule " + ruleDisplayIndex + " " + Rules[ruleDisplayIndex]);
+                ReplaceRule(ruleDisplayIndex, TextDisplayRule(ruleDisplayIndex, (src, dst, proto, block)));
 
             }
 
         }
 
-        AddToDropDown();
+        return;
 
     }
 
-    //Making the rule visible in the dropdown menu
-    private void AddToDropDown()
+    //Creating the text for the rule
+    private string TextDisplayRule(int index, (int srcAdd, int dstAdd, int protoAdd, int blockAdd)rule)
     {
+
+        string ruleTxt;
 
         string protoS;
         string blockS;
 
-        if(proto == 0)
+        if(rule.Item3 == 0)
             protoS = "MODBUS";
         else    
             protoS = "ICMP";
 
-        if(block == 1)
+        if(rule.Item4 == 1)
             blockS = "BLOCK";
         else
             blockS = "PASS";
 
-        ruleBuilder.Append(id.ToString() + ":")
-                   .Append(Devices[src] + ", ")
-                   .Append(Devices[dst] + "|")
+        ruleBuilder.Append(index.ToString() + ":")
+                   .Append(Devices[rule.Item1] + ", ")
+                   .Append(Devices[rule.Item2] + "|")
                    .Append(protoS + " ")
                    .Append(blockS);
-
-        rulesDisplay.options.Add(new TMP_Dropdown.OptionData(ruleBuilder.ToString()));
-
-        rulesDisplay.RefreshShownValue();
-
+        
+        ruleTxt = ruleBuilder.ToString();
         ruleBuilder.Clear();
+
+        return ruleTxt;
 
     }
 
+    //Making the rule visible in the dropdown menu
+    private void AddToDropDown(string newRule)
+    {
+
+        rulesDisplay.options.Add(new TMP_Dropdown.OptionData(newRule));
+
+        rulesDisplay.RefreshShownValue();
+
+        return;
+
+    }
+
+    //Replacing a existing rule
+    public void ReplaceRule(int index, string newRule)
+    {
+
+        rulesDisplay.options[index] = new TMP_Dropdown.OptionData(newRule);
+
+        rulesDisplay.RefreshShownValue();
+
+        return;
+
+    }
+
+
+    //Check if the rule exists
     public bool CheckRule((int srcMsg, int dstMsg, int protoMsg) msg)
     {
 
         int key = -1;
-
+        print("ME LLAMAN");
         foreach (var keyI in Rules)
         {
             var value = keyI.Value;
@@ -187,7 +244,73 @@ public class RE : MonoBehaviour
         else
             return true;
  
+    }
+
+    //Toggle arrows to move up or down the rules in the hierarchy
+    public void ToggleArrows(int val)
+    {
+
+        if(val == 0)
+        {
+
+            ArrowUp.image.sprite = ArrowUpDeactiv;
+            ArrowDown.image.sprite = ArrowDownDeactiv;
+
+        }
+        else 
+        {
+
+            ArrowUp.image.sprite = ArrowUpActive;
+            ArrowDown.image.sprite = ArrowDownActive;
+
+        }
+
+        return;
 
     }
 
+
+    //Moving the rules in the hierarchy
+
+    public void MoveUp()
+    {
+        
+        var valueToMove = Rules[ruleDisplayIndex];
+        var ValueDisplaced = Rules[ruleDisplayIndex - 1];
+
+        string ruleUp = TextDisplayRule(ruleDisplayIndex-1, valueToMove);
+        print(ruleUp);
+
+        string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
+        print(ruleDown);
+
+        Rules[ruleDisplayIndex - 1] = valueToMove;
+        Rules[ruleDisplayIndex] = ValueDisplaced;
+        ReplaceRule(ruleDisplayIndex -1 ,ruleUp);
+        ReplaceRule(ruleDisplayIndex, ruleDown);
+
+        return;
+
+    }
+
+    public void MoveDown()
+    {
+
+        var valueToMove = Rules[ruleDisplayIndex];
+        var ValueDisplaced = Rules[ruleDisplayIndex + 1];
+
+        string ruleUp = TextDisplayRule(ruleDisplayIndex+1, valueToMove);
+        print(ruleUp);
+
+        string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
+        print(ruleDown);
+
+        Rules[ruleDisplayIndex + 1] = valueToMove;
+        Rules[ruleDisplayIndex] = ValueDisplaced;
+        ReplaceRule(ruleDisplayIndex +1 ,ruleUp);
+        ReplaceRule(ruleDisplayIndex, ruleDown);
+
+        return;
+
+    }
 }
