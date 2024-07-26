@@ -327,7 +327,6 @@ public class EventProcessor
 
             case 5:
                 return "Write Single Coil";
-
             case 6:
                 return "Write Single Register";
 

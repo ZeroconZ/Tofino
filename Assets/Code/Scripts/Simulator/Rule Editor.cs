@@ -4,7 +4,9 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RE : MonoBehaviour
 {
@@ -21,12 +23,14 @@ public class RE : MonoBehaviour
     int proto;
     int block;
     int ruleDisplayIndex;
+    bool isProtoActive = true;
 
     //Dictionary where rules are stored
     Dictionary<int,(int srcR, int dstR, int protoR, int blockR)> Rules = new Dictionary<int,(int, int, int, int)>();
     //Dictionary that relates devices variables to their names
     Dictionary<int, string> Devices = new Dictionary<int, string>();
-
+    Dictionary<int, string> Proto = new Dictionary<int, string>();
+ 
     StringBuilder ruleBuilder = new StringBuilder();
 
     //UI elements to move rules up or down
@@ -57,6 +61,26 @@ public class RE : MonoBehaviour
         Devices.Add(2, "PLC");
         Devices.Add(3, "DRIVER");
 
+        Proto.Add(0, "MODBUS");
+        Proto.Add(1, "ICMP");
+        Proto.Add(2, "ENF. READ");
+        Proto.Add(3, "ENF. R/W");   
+        Proto.Add(4, "ENF. PROG/OFS");
+        Proto.Add(5, "ENF. FUNC. 1");
+        Proto.Add(6, "ENF. FUNC. 2");
+        Proto.Add(7, "ENF. FUNC. 3");
+        Proto.Add(8, "ENF. FUNC. 4");
+        Proto.Add(9, "ENF. FUNC. 5");
+        Proto.Add(10, "ENF. FUNC. 6");
+        Proto.Add(11, "ENF. FUNC. 7");
+        Proto.Add(19, "ENF. FUNC. 15");
+        Proto.Add(20, "ENF. FUNC. 16");
+        Proto.Add(24, "ENF. FUNC. 20");
+        Proto.Add(25, "ENF. FUNC. 21");
+        Proto.Add(27, "ENF. FUNC. 23");
+        Proto.Add(28, "ENF. FUNC. 24");
+        Proto.Add(47, "ENF. FUNC. 43");
+
         CCM.instance.hideArrow();
 
     }
@@ -83,9 +107,31 @@ public class RE : MonoBehaviour
     public void ProtoRule(int val)
     {
 
-        proto = val;
+        if(isProtoActive)
+        {
+            
+            proto = val;
+            Debug.Log("Proto");
 
-        return;
+        }    
+        else
+            return;
+
+    }
+
+    public void EnforcerRule(int val)
+    {
+
+        if(!isProtoActive)
+       {
+
+            proto = val + 2; 
+            block = 0;
+
+            /*if(val <= 5)
+                ShowAdvanced();*/
+
+        }
 
     }
 
@@ -107,6 +153,13 @@ public class RE : MonoBehaviour
         
     }
 
+    public void ProtoDeactiv(bool enforcerEnabled)
+    {
+
+        isProtoActive = !enforcerEnabled;
+
+    }
+
     public void CreateRule()
     {
 
@@ -122,7 +175,7 @@ public class RE : MonoBehaviour
             if(ruleDisplayIndex == 0)
             {    
 
-                if(Rules.ContainsValue((src, dst, proto, 1)) || Rules.ContainsValue((src, dst, proto, 0)))
+                if(Rules.ContainsValue((src, dst, proto, 1)) || Rules.ContainsValue((src, dst, proto, 0))  && proto < 2)
                 {
                     
                     Debug.Log("Repe");
@@ -160,26 +213,32 @@ public class RE : MonoBehaviour
     {
 
         string ruleTxt;
-
-        string protoS;
         string blockS;
-
-        if(rule.Item3 == 0)
-            protoS = "MODBUS";
-        else    
-            protoS = "ICMP";
 
         if(rule.Item4 == 1)
             blockS = "BLOCK";
         else
             blockS = "PASS";
 
-        ruleBuilder.Append(index.ToString() + ":")
-                   .Append(Devices[rule.Item1] + ", ")
-                   .Append(Devices[rule.Item2] + "|")
-                   .Append(protoS + " ")
-                   .Append(blockS);
-        
+        if(rule.Item3 < 2)
+        {
+
+            ruleBuilder.Append(index.ToString() + ":")
+                    .Append(Devices[rule.Item1] + ", ")
+                    .Append(Devices[rule.Item2] + "|")
+                    .Append(Proto[rule.Item3] + " ")
+                    .Append(blockS);
+
+        }
+        else
+        {
+
+            ruleBuilder.Append(index.ToString() + ":")
+                    .Append(Devices[rule.Item1] + ", ")
+                    .Append(Devices[rule.Item2] + "|")
+                    .Append(Proto[rule.Item3] + " ");
+
+        }
         ruleTxt = ruleBuilder.ToString();
         ruleBuilder.Clear();
 
@@ -217,7 +276,6 @@ public class RE : MonoBehaviour
     {
 
         int key = -1;
-        print("ME LLAMAN");
         foreach (var keyI in Rules)
         {
             var value = keyI.Value;
@@ -255,6 +313,7 @@ public class RE : MonoBehaviour
 
             ArrowUp.image.sprite = ArrowUpDeactiv;
             ArrowDown.image.sprite = ArrowDownDeactiv;
+            Arrows = false;
 
         }
         else 
@@ -262,6 +321,7 @@ public class RE : MonoBehaviour
 
             ArrowUp.image.sprite = ArrowUpActive;
             ArrowDown.image.sprite = ArrowDownActive;
+            Arrows = true;
 
         }
 
@@ -271,46 +331,68 @@ public class RE : MonoBehaviour
 
 
     //Moving the rules in the hierarchy
-
     public void MoveUp()
     {
         
-        var valueToMove = Rules[ruleDisplayIndex];
-        var ValueDisplaced = Rules[ruleDisplayIndex - 1];
+        if(Arrows == true)
+        {
+            var valueToMove = Rules[ruleDisplayIndex];
+            var ValueDisplaced = Rules[ruleDisplayIndex - 1];
 
-        string ruleUp = TextDisplayRule(ruleDisplayIndex-1, valueToMove);
-        print(ruleUp);
+            string ruleUp = TextDisplayRule(ruleDisplayIndex-1, valueToMove);
 
-        string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
-        print(ruleDown);
+            string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
 
-        Rules[ruleDisplayIndex - 1] = valueToMove;
-        Rules[ruleDisplayIndex] = ValueDisplaced;
-        ReplaceRule(ruleDisplayIndex -1 ,ruleUp);
-        ReplaceRule(ruleDisplayIndex, ruleDown);
+            Rules[ruleDisplayIndex - 1] = valueToMove;
+            Rules[ruleDisplayIndex] = ValueDisplaced;
+            ReplaceRule(ruleDisplayIndex -1 ,ruleUp);
+            ReplaceRule(ruleDisplayIndex, ruleDown);
+        }
+        else
+        {
 
-        return;
+            return;
 
+        }
+        
     }
 
     public void MoveDown()
     {
 
-        var valueToMove = Rules[ruleDisplayIndex];
-        var ValueDisplaced = Rules[ruleDisplayIndex + 1];
+        if(Arrows == true && ruleDisplayIndex != 0)
+        {
 
-        string ruleUp = TextDisplayRule(ruleDisplayIndex+1, valueToMove);
-        print(ruleUp);
+            var valueToMove = Rules[ruleDisplayIndex];
+            var ValueDisplaced = Rules[ruleDisplayIndex + 1];
 
-        string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
-        print(ruleDown);
+            string ruleUp = TextDisplayRule(ruleDisplayIndex+1, valueToMove);
 
-        Rules[ruleDisplayIndex + 1] = valueToMove;
-        Rules[ruleDisplayIndex] = ValueDisplaced;
-        ReplaceRule(ruleDisplayIndex +1 ,ruleUp);
-        ReplaceRule(ruleDisplayIndex, ruleDown);
+            string ruleDown = TextDisplayRule(ruleDisplayIndex, ValueDisplaced);
 
-        return;
+            Rules[ruleDisplayIndex + 1] = valueToMove;
+            Rules[ruleDisplayIndex] = ValueDisplaced;
+            ReplaceRule(ruleDisplayIndex +1 ,ruleUp);
+            ReplaceRule(ruleDisplayIndex, ruleDown);
+
+        }
+        else
+        {
+
+            return;
+
+        }
 
     }
+
+    //Showing the advanced enforcer options
+
+    public TMP_Dropdown Enforcer;
+    public void ShowAdvanced()
+    {
+
+        Enforcer.options[5] = new TMP_Dropdown.OptionData("Function 1: Read Coils");
+
+    }
+
 }
