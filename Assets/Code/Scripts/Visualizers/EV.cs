@@ -141,7 +141,7 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                    .Append(logProcessor.getError(line) + "|")
+                    .Append(logProcessor.getError(line) + ", check firewall rules|")
                     .Append("source: " + src)
                     .AppendLine(", destination: " + dst);
 
@@ -150,7 +150,7 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                    .Append("Cannot reach via Modbus|")
+                    .Append("Cannot reach via Modbus, check firewall rules|")
                     .Append("source: " + src + ", ")
                     .AppendLine("destination: " + dst);
             
@@ -159,7 +159,7 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                       .Append(logProcessor.getError(line) + "|")
+                       .Append(logProcessor.getError(line) + ", check firewall rules|")
                        .Append("source: " + src + ", ")
                        .AppendLine("destination: " + dst);
                    
@@ -197,7 +197,8 @@ public class EventVis : MonoBehaviour
             ICMPSB.Append(id + "|")
                     .Append(src)
                     .Append(" cannot reach ")
-                    .AppendLine(dst);
+                    .Append(dst)
+                    .Append(", check irewall rules");
 
         }
         else

@@ -1,4 +1,4 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -15,6 +15,8 @@ public class logReader : MonoBehaviour
 
     EventProcessor logProcessor = new EventProcessor();
 
+    List<string> events = new List<string>();
+
 
     string username = "dtuser";
     string password = "TofinoDT_2024";
@@ -24,6 +26,9 @@ public class logReader : MonoBehaviour
     
     int id;
     bool firstReq = true;
+    string last;
+    string lastButOne;
+
 
 
     [ContextMenu("Read log")]
@@ -43,7 +48,7 @@ public class logReader : MonoBehaviour
 
             yield return StartCoroutine(APIRequest());
 
-            yield return new WaitForSeconds(0.060f);
+            yield return new WaitForSeconds(0.250f);
 
         }
 
@@ -53,7 +58,7 @@ public class logReader : MonoBehaviour
     private IEnumerator APIRequest()
     {
 
-        UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino");
+        UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino-all");
 
         string auth = username + ":" + password;
         string authHeaderValue = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(auth));
@@ -65,18 +70,14 @@ public class logReader : MonoBehaviour
             Debug.Log("Error" + webReader.error);
 
         else
-            eventCompare(webReader.downloadHandler.text);
+            NewEvents(webReader.downloadHandler.text);
 
     }
 
-/*
-    private void divideLines(string logData)
+    private void NewEvents(string log)
     {
 
-        StringBuilder logBuilder = new StringBuilder(logData);
-
-        string line = string.Empty;
-        string previousLine = string.Empty;
+        StringBuilder logBuilder = new StringBuilder(log);
 
         int previousIndex = 0;
         int index;
@@ -84,110 +85,62 @@ public class logReader : MonoBehaviour
         while ((index = logBuilder.ToString().IndexOf("<br>", previousIndex)) != -1)
         {
 
-            line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
+            string line = logBuilder.ToString().Substring(previousIndex, index - previousIndex);
             previousIndex = index + 4;
 
-            if(firstReq)
-            {
-
-                MMO.instance.newMode(line);
-                firstReq = false;
-                return;                
-
-            }
-            else
-            {
-
-                switch(dateCompare(lastLineDate, logProcessor.getDate(line)))
-                {
-
-                    case 0:
-                        break;
-
-                    case 1:
-                        remitter(line, previousLine);
-                        break;
-
-                    case 2:
-                        string line1 = lastLineProcc.Trim();
-                        string line2 = line.Trim();
-
-                        if(line1 != line2)
-                        {
-
-                            remitter(line, previousLine);
-                            break;
-
-                        }
-
-                        break;
-   
-                    default:
-                        Debug.Log("Error");
-                        break;
-
-                }
-
-            }
-
-            previousLine = line;
+            events.Add(line);
 
         }
-
-        if (previousIndex < logBuilder.Length)
-        {
-
-            lastLineDate = logProcessor.getDate(previousLine);
-            lastLineProcc = line;
-
-        }
-
-    }
-*/
-
-    private void eventCompare(string logData)
-    {
 
         if(firstReq)
         {
 
-            MMO.instance.newMode(logData);
+            last = events[events.Count - 1];
+            lastButOne = events[events.Count - 2];
+            MMO.instance.newMode(events[0]);
             firstReq = false;
 
         }
+        else
+        {
 
-        if(logData.Trim() != oldLine.Trim())
-            remitter(logData);
+            int lastIndexPreviousReq = FindEvents(last, lastButOne);
 
-        oldLine = logData;
+            if(lastIndexPreviousReq == events.Count)
+                return;
+            
+            for(int i = lastIndexPreviousReq; i < events.Count - 1; i++)
+            {
+
+                Remitter(events[i]);
+
+            }
+
+            last = events[events.Count - 1];
+            lastButOne = events[events.Count - 2];
+
+        }
+
+        events.Clear();
 
     }
 
-    private int dateCompare(string oldDate, string newDate)
+    private int FindEvents(string lastEvent, string lastButOneEvent)
     {
 
-        Debug.Log("Fecha vieja: " + oldDate + " Fecha nueva: " + newDate);
+        for (int i = 0; i < events.Count - 1; i++)
+        {
 
-        if(string.IsNullOrEmpty(oldDate) || string.IsNullOrEmpty(newDate))
-            return 0;
+            if(events[i].Equals(lastEvent) && events[i-1].Equals(lastButOneEvent))
+                return i;
 
+        }
 
-        DateTime refDate = DateTime.ParseExact(oldDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
-        DateTime toCompDate = DateTime.ParseExact(newDate, "MMM dd HH:mm:ss", CultureInfo.InvariantCulture);
+        return 9999;
 
-        if(refDate > toCompDate)
-            return 0;
-
-        else if(refDate < toCompDate)
-            return 1;
-
-        else
-            return 2;
-    
     }
 
-
-    private void remitter(string line)
+    private void Remitter(string line)
     {
 
             id++;

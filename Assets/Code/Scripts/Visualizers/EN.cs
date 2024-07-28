@@ -37,6 +37,8 @@ public class EventNotif : MonoBehaviour
     public void newNotif(string line, string idS)
     {
         
+        string header = string.Empty;
+
         if(Regex.IsMatch(line, "System") || Regex.IsMatch(logProcessor.getError(line), "Logger"))
         {
 
@@ -57,7 +59,16 @@ public class EventNotif : MonoBehaviour
             else
             {
 
-                error.AppendLine(logProcessor.getError(line))
+                if(logProcessor.getProtocol(line) == 0)
+                    header = "Modbus ACL error";
+
+                else if(logProcessor.getProtocol(line) == 1)
+                    header = "ACL Error";
+                
+                else if(logProcessor.getProtocol(line) == 2)
+                    header = "ICMP Error";
+
+                error.AppendLine(header)
                     .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))
                     .Append("Destination: " + logProcessor.whoIs(logProcessor.getDstIP(line)));
 
