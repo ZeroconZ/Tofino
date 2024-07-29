@@ -28,7 +28,7 @@ public class TrafficGen : MonoBehaviour
         IPs.Add(2, "10.1.1.10");
         IPs.Add(3, "10.1.1.12");
 
-        CCM.instance.hideArrow();
+        CCM.instance.HideArrow();
 
     }
     

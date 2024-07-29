@@ -48,7 +48,7 @@ public class logReader : MonoBehaviour
 
             yield return StartCoroutine(APIRequest());
 
-            yield return new WaitForSeconds(0.250f);
+            yield return new WaitForSeconds(0.100f);
 
         }
 

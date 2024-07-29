@@ -62,11 +62,13 @@ public class EventNotif : MonoBehaviour
                 if(logProcessor.getProtocol(line) == 0)
                     header = "Modbus ACL error";
 
-                else if(logProcessor.getProtocol(line) == 1)
-                    header = "ACL Error";
+
                 
                 else if(logProcessor.getProtocol(line) == 2)
                     header = "ICMP Error";
+                
+                else 
+                    header = logProcessor.getError(line);   
 
                 error.AppendLine(header)
                     .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))

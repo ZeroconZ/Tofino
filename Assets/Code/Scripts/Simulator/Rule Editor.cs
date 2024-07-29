@@ -81,7 +81,7 @@ public class RE : MonoBehaviour
         Proto.Add(28, "ENF. FUNC. 24");
         Proto.Add(47, "ENF. FUNC. 43");
 
-        CCM.instance.hideArrow();
+        CCM.instance.HideArrow();
 
     }
 

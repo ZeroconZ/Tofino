@@ -158,8 +158,8 @@ public class EventProcessor
             string smac = getSMAC(logLine);
             string dmac = getDMAC(logLine);
 
-            processedLine.Append(date + " ")
-                         .Append(LSM + " ")
+            processedLine.Append(date + "|")
+                         .Append(LSM + "|")
                          .Append(msg + " ")
                          .Append(smac + " ")
                          .Append(dmac);
@@ -171,8 +171,8 @@ public class EventProcessor
             string src = getSrcIP(logLine);
             string dst = getDstIP(logLine);
 
-            processedLine.Append(date + " ")
-                         .Append(LSM + " ")
+            processedLine.Append(date + "|")
+                         .Append(LSM + "|")
                          .Append(msg + " ")
                          .Append(src + " ")
                          .Append(dst + " ");           
@@ -314,60 +314,60 @@ public class EventProcessor
         {
 
             case 1:
-                return "Read Coils";
+                return "Reading Coils";
             
             case 2: 
-                return "Read Discrete Inputs";
+                return "Reading Discrete Inputs";
 
             case 3:
-                return "Read Holding Registers";
+                return "Reading Holding Registers";
 
             case 4:
-                return "Read Input Registers";
+                return "Reading Input Registers";
 
             case 5:
-                return "Write Single Coil";
+                return "Writing Single Coil";
             case 6:
-                return "Write Single Register";
+                return "Writing Single Register";
 
             case 7:
-                return "Read Exception Status";
+                return "Reading Exception Status";
 
             case 8:
                 return "Diagnostics";
 
             case 11:
-                return "Get Comm Event Counter";
+                return "Getting Comm Event Counter";
 
             case 12: 
-                return "Get Com Event Log";
+                return "Getting Com Event Log";
 
             case 15:
-                return "Write Multiple Coils";
+                return "Writing Multiple Coils";
 
             case 16:
-                return "Write Multiple Registers";
+                return "Writing Multiple Registers";
 
             case 17:
-                return "Report Server ID";
+                return "Reporting Server ID";
 
             case 20:
-                return "Read File Record";
+                return "Reading File Record";
 
             case 21: 
-                return "Write File Record";
+                return "Writing File Record";
 
             case 22:
-                return "Mask Write Regiser";
+                return "Mask Writing Regiser";
 
             case 23:
-                return "Read/Write Multiple Registers";
+                return "Reading/Writing Multiple Registers";
 
             case 24:
-                return "Read FIFO Queue";
+                return "Reading FIFO Queue";
 
             case 43:
-                return "Read Device Identification";
+                return "Reading Device Identification";
 
             case 90:
                 return "Unity Programming/OFS";

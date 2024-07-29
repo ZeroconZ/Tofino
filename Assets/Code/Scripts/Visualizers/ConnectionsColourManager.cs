@@ -28,6 +28,8 @@ public class CCM : MonoBehaviour
         else 
             DestroyImmediate(gameObject);
 
+        HideArrow();
+
     }   
 
 
@@ -35,7 +37,6 @@ public class CCM : MonoBehaviour
     {
 
         allGreen();
-        hideArrow();
 
     }
 
@@ -50,8 +51,6 @@ public class CCM : MonoBehaviour
 
 
         allGreen();
-        hideArrow();      
-        
        
         if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
         {
@@ -122,7 +121,8 @@ public class CCM : MonoBehaviour
             Debug.Log(dst);
 
         }
-        
+        else
+            HideArrow();
 
     }
 
@@ -163,14 +163,14 @@ public class CCM : MonoBehaviour
 
     }
 
-    public void hideArrow()
+    public void HideArrow()
     {
-        /*
+        
         PLC.SetActive(false);
         VAR.SetActive(false);            
         HMI.SetActive(false);
         PC.SetActive(false);
-        */
+        
     }
 
 }

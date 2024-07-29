@@ -141,7 +141,8 @@ public class EventVis : MonoBehaviour
         {
 
             ModbusSB.Append(id + "|")
-                    .Append(logProcessor.getError(line) + ", check firewall rules|")
+                    .Append(logProcessor.getLSM(line) + "|")
+                    .Append(logProcessor.getError(line) + " (" + Regex.Match(line, @"code (\d{1,2})").Value + ")" + " is not permitted, check enforcer rules|")
                     .Append("source: " + src)
                     .AppendLine(", destination: " + dst);
 
@@ -149,19 +150,35 @@ public class EventVis : MonoBehaviour
         else if(ViewModbusACLEvents && Regex.IsMatch(line, "ACL"))
         {
 
-            ModbusSB.Append(id + "|")
-                    .Append("Cannot reach via Modbus, check firewall rules|")
-                    .Append("source: " + src + ", ")
-                    .AppendLine("destination: " + dst);
+            if(Regex.IsMatch(line, " allowed and logged as specified in the ACL"))
+            {
+
+                ModbusSB.Append(id + "|")
+                        .Append(logProcessor.getLSM(line) + "|")
+                        .Append(src + " ")
+                        .Append("was able to reach ")
+                        .AppendLine(dst);
+
+            }
+            else
+            {
+
+                ModbusSB.Append(id + "|")
+                        .Append(logProcessor.getLSM(line) + "|")
+                        .AppendLine(src + " Was not able to reach " + dst  + ", check firewall rules");
+
+            }
+
             
         }
         else if(!Regex.IsMatch(line, "ACL"))
         {
 
             ModbusSB.Append(id + "|")
-                       .Append(logProcessor.getError(line) + ", check firewall rules|")
-                       .Append("source: " + src + ", ")
-                       .AppendLine("destination: " + dst);
+                    .Append(logProcessor.getLSM(line) + "|")
+                    .Append(logProcessor.getError(line) + ", check firewall rules|")
+                    .Append("source: " + src + ", ")
+                    .AppendLine("destination: " + dst);
                    
         }
 
@@ -180,8 +197,9 @@ public class EventVis : MonoBehaviour
         foreach(string Event in ModbusMessages)
             ModbusSB.AppendLine(Event);
 
-        ModbusEvents.text = ModbusSB.ToString();
-
+        if(ModbusSB.Length > 30)
+            ModbusEvents.text = ModbusSB.ToString();
+            
         ModbusSB.Clear();
 
         return;
@@ -195,19 +213,31 @@ public class EventVis : MonoBehaviour
         {
 
             ICMPSB.Append(id + "|")
+                    //.Append(logProcessor.getLSM(line) + "|")
                     .Append(src)
                     .Append(" cannot reach ")
                     .Append(dst)
-                    .Append(", check irewall rules");
+                    .AppendLine(", check firewall rules");
+
+        }
+        else if(Regex.IsMatch(line, " allowed and logged as specified in the ACL"))
+        {
+
+            ICMPSB.Append(id + "|")
+                    .Append(logProcessor.getLSM(line) + "|")
+                    .Append(src)
+                    .Append(" was able to reach ")
+                    .AppendLine(dst);
 
         }
         else
         {
 
             ICMPSB.Append(id + "|")
-                    .Append(logProcessor.getMsg(line))
-                    .Append("source:" +src)
-                    .AppendLine(", destination:" + dst);
+                  .Append(logProcessor.getLSM(line) + "|")
+                  .Append(logProcessor.getMsg(line))
+                  .Append("source:" +src)
+                  .AppendLine(", destination:" + dst);
 
         }
 
@@ -236,7 +266,8 @@ public class EventVis : MonoBehaviour
     {
 
         SystemSB.Append(id + "|")
-                  .AppendLine(logProcessor.getError(line));
+                .Append(logProcessor.getLSM(line) + " ")
+                .AppendLine(Regex.Match(line, @"suser=(\w+)").Value);
 
         if(SystemMessages.Count > 100)
         {
