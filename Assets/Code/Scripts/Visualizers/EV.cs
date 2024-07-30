@@ -213,7 +213,7 @@ public class EventVis : MonoBehaviour
         {
 
             ICMPSB.Append(id + "|")
-                    //.Append(logProcessor.getLSM(line) + "|")
+                    .Append(logProcessor.getLSM(line) + "|")
                     .Append(src)
                     .Append(" cannot reach ")
                     .Append(dst)
@@ -265,9 +265,30 @@ public class EventVis : MonoBehaviour
     private void SystemText(string line, string id)
     {
 
-        SystemSB.Append(id + "|")
-                .Append(logProcessor.getLSM(line) + " ")
-                .AppendLine(Regex.Match(line, @"suser=(\w+)").Value);
+        if(logProcessor.getModeChange(line))
+        {
+
+            SystemSB.Append(id + "|")
+                    .Append(logProcessor.getLSM(line) + "|")
+                    .AppendLine("Device mode now is " + logProcessor.getMode(line));
+
+        }
+        else if(Regex.IsMatch(line, @"suser=(\w+)"))
+        {
+
+            SystemSB.Append(id + "|")
+                    .Append(logProcessor.getLSM(line) + "|")
+                    .AppendLine("source = " + Regex.Match(line, @"suser=(\w+)").Groups[1].Value);
+
+        }
+        else
+        {
+
+             SystemSB.Append(id + "|")
+                     .AppendLine(logProcessor.getLSM(line));
+
+        }
+        
 
         if(SystemMessages.Count > 100)
         {

@@ -51,78 +51,131 @@ public class CCM : MonoBehaviour
 
 
         allGreen();
+        HideArrow();
+        
+        if(Regex.IsMatch(logLine, " allowed and logged as specified in the ACL"))
+        {
+
+            if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
+            {
+
+                PLC_TSA.color = Color.blue;
+
+            }
+            else if(src.Trim() == "src=10.1.1.12" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen Variador
+            {
+
+                TSA_VAR.color = Color.blue;
+
+            }
+            else if(src.Trim() == "src=10.1.1.11" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen HMI
+            {
+
+                HMI_VAR.color = Color.blue;
+
+            }
+            else if(src.Trim() == "src=10.1.1.101" || SMAC.Trim() == "smac=e0:d5:5e:df:e6:1a") //Origen desconocido
+            {
+
+                PC_TSA.color = Color.blue;
+
+            }
+
+            if(dst.Trim() == "dst=10.1.1.10" || DMAC.Trim() == "dmac=00:80:f4:16:3b:4f") //Destino PLC
+            {
+
+                PLC_TSA.color = Color.blue;
+                PLC.SetActive(true);
+
+            }
+            else if(dst.Trim() == "dst=10.1.1.12" || DMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Destino Variador
+            {
+
+                TSA_VAR.color = Color.blue;
+                VAR.SetActive(true);            
+
+            }
+            else if(dst.Trim() == "dst=10.1.1.11" || DMAC.Trim() == "dmac=00:80:f4:dc:16:5f") //Destino HMI
+            {
        
-        if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
-        {
+                HMI_VAR.color = Color.blue;
+                HMI.SetActive(true);
 
-            PLC_TSA.color = Color.red;
+            }
+            else if(dst.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino PC
+            {
 
-        }
-        else if(src.Trim() == "src=10.1.1.12" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen Variador
-        {
+                PC_TSA.color = Color.blue;
+                PC.SetActive(true);
 
-            TSA_VAR.color = Color.red;
-
-        }
-        else if(src.Trim() == "src=10.1.1.11" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen HMI
-        {
-
-            HMI_VAR.color = Color.red;
-
-        }
-        else if(src.Trim() == "src=10.1.1.101" || SMAC.Trim() == "smac=e0:d5:5e:df:e6:1a") //Origen desconocido
-        {
-
-            PC_TSA.color = Color.red;
-
-        }
-
-
-        if(dst.Trim() == "dst=10.1.1.10" || DMAC.Trim() == "dmac=00:80:f4:16:3b:4f") //Destino PLC
-        {
-
-            PLC_TSA.color = Color.red;
-            PLC.SetActive(true);
-            VAR.SetActive(false);            
-            HMI.SetActive(false);
-            PC.SetActive(false);
-            
-
-        }
-        else if(dst.Trim() == "dst=10.1.1.12" || DMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Destino Variador
-        {
-
-            TSA_VAR.color = Color.red;
-            PLC.SetActive(false);
-            VAR.SetActive(true);            
-            HMI.SetActive(false);
-            PC.SetActive(false);
-
-        }
-        else if(dst.Trim() == "dst=10.1.1.11" || DMAC.Trim() == "dmac=00:80:f4:dc:16:5f") //Destino HMI
-        {
-
-            HMI_VAR.color = Color.red;
-            PLC.SetActive(false);
-            VAR.SetActive(false);            
-            HMI.SetActive(true);
-            PC.SetActive(false);
-
-        }
-        else if(dst.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino PC
-        {
-
-            PC_TSA.color = Color.red;
-            PLC.SetActive(false);
-            VAR.SetActive(false);
-            HMI.SetActive(false);
-            PC.SetActive(true);
-
-            Debug.Log(dst);
+            }
+            else
+                HideArrow();
 
         }
         else
-            HideArrow();
+        {     
+        
+            if(src.Trim() == "src=10.1.1.10" || SMAC.Trim() == "smac=00:80:f4:16:3b:4f") //Origen PLC
+            {
+
+                PLC_TSA.color = Color.red;
+
+            }
+            else if(src.Trim() == "src=10.1.1.12" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen Variador
+            {
+
+                TSA_VAR.color = Color.red;
+
+            }
+            else if(src.Trim() == "src=10.1.1.11" || SMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Origen HMI
+            {
+
+                HMI_VAR.color = Color.red;
+
+            }
+            else if(src.Trim() == "src=10.1.1.101" || SMAC.Trim() == "smac=e0:d5:5e:df:e6:1a") //Origen desconocido
+            {
+
+                PC_TSA.color = Color.red;
+
+            }
+
+
+            if(dst.Trim() == "dst=10.1.1.10" || DMAC.Trim() == "dmac=00:80:f4:16:3b:4f") //Destino PLC
+            {
+
+                PLC_TSA.color = Color.red;
+                PLC.SetActive(true);
+
+            }
+            else if(dst.Trim() == "dst=10.1.1.12" || DMAC.Trim() == "smac=00:80:f4:dc:16:5f") //Destino Variador
+            {
+
+                TSA_VAR.color = Color.red;
+                VAR.SetActive(true);            
+
+            }
+            else if(dst.Trim() == "dst=10.1.1.11" || DMAC.Trim() == "dmac=00:80:f4:dc:16:5f") //Destino HMI
+            {
+
+                HMI_VAR.color = Color.red;            
+                HMI.SetActive(true);
+
+            }
+            else if(dst.Trim() == "dst=10.1.1.101" || SMAC.Trim() == "dmac=e0:d5:5e:df:e6:1a") //Destino PC
+            {
+
+                PC_TSA.color = Color.red;
+                PC.SetActive(true);
+
+                Debug.Log(dst);
+
+            }
+            else
+                HideArrow();
+                
+        }
 
     }
 

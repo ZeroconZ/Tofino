@@ -39,40 +39,62 @@ public class EventNotif : MonoBehaviour
         
         string header = string.Empty;
 
-        if(Regex.IsMatch(line, "System") || Regex.IsMatch(logProcessor.getError(line), "Logger"))
+        if(Regex.IsMatch(line, " allowed and logged as specified in the ACL"))
         {
 
-            error.Append(logProcessor.getError(line));
+            header = "Event Allowed";
+
+            error.AppendLine(header)
+                 .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))
+                 .Append("Destination: " + logProcessor.whoIs(logProcessor.getDstIP(line)));
 
         }
         else
         {
-
-            if(!logProcessor.isSrc(line) || !logProcessor.isDst(line))
+            if(Regex.IsMatch(line, "System") || Regex.IsMatch(logProcessor.getError(line), "Logger"))
             {
 
-                error.AppendLine(logProcessor.getError(line))
-                    .AppendLine("Source: unknown")
-                    .Append("Destination: unknown");
+                error.Append(logProcessor.getError(line));
 
             }
             else
             {
 
-                if(logProcessor.getProtocol(line) == 0)
-                    header = "Modbus ACL error";
+                if(!logProcessor.isSrc(line) || !logProcessor.isDst(line))
+                {
+
+                    error.AppendLine(logProcessor.getError(line))
+                         .AppendLine("Source: unknown")
+                         .Append("Destination: unknown");
+
+                }
+                else
+                {
+
+                    if(logProcessor.getProtocol(line) == 0)
+                    {
+
+                        if(Regex.IsMatch(line, "ACL"))
+                            header = "Modbus ACL Error";
+
+                        else if(Regex.IsMatch(line, "Tofino Modbus/TCP Enforcer"))
+                            header = logProcessor.getError(line);
+
+                    }
 
 
-                
-                else if(logProcessor.getProtocol(line) == 2)
-                    header = "ICMP Error";
-                
-                else 
-                    header = logProcessor.getError(line);   
+                    
+                    else if(logProcessor.getProtocol(line) == 2)
+                        header = "ICMP Error";
+                    
+                    else 
+                        header = logProcessor.getError(line);   
 
-                error.AppendLine(header)
-                    .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))
-                    .Append("Destination: " + logProcessor.whoIs(logProcessor.getDstIP(line)));
+                    error.AppendLine(header)
+                        .AppendLine("Source: " + logProcessor.whoIs(logProcessor.getSrcIP(line)))
+                        .Append("Destination: " + logProcessor.whoIs(logProcessor.getDstIP(line)));
+
+                }
 
             }
 
