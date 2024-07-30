@@ -147,6 +147,16 @@ public class EventProcessor
     {
 
         processedLine.Clear();
+        string proto;
+
+        if(getProtocol(logLine) == 0)
+            proto = "proto = MODBUS";
+        else if(getProtocol(logLine) == 1)
+            proto = "proto = TCP";
+        else if(getProtocol(logLine) == 2)
+            proto = "proto = ICMP";
+        else
+            proto = Regex.Match(logLine,@"proto=(\w+)(/(\w+))?").Value;
 
         string date = getDate(logLine);
         string LSM = getLSM(logLine);
@@ -162,7 +172,8 @@ public class EventProcessor
                          .Append(LSM + "|")
                          .Append(msg + " ")
                          .Append(smac + " ")
-                         .Append(dmac);
+                         .Append(dmac + " ")
+                         .AppendLine(proto);
                      
         }
         else
@@ -175,7 +186,8 @@ public class EventProcessor
                          .Append(LSM + "|")
                          .Append(msg + " ")
                          .Append(src + " ")
-                         .Append(dst + " ");           
+                         .Append(dst + " ")
+                         .AppendLine(proto);          
 
         }
 
