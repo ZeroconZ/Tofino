@@ -169,8 +169,6 @@ public class CCM : MonoBehaviour
                 PC_TSA.color = Color.red;
                 PC.SetActive(true);
 
-                Debug.Log(dst);
-
             }
             else
                 HideArrow();

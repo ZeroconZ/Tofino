@@ -21,9 +21,10 @@ public class EventProcessor
     public string getDate(string logLine)
     {
 
-        string datePattern = @"^\w{3} \d{1,2} \d{2}:\d{2}:\d{2}";
+        string datePattern = @"^\w{3}\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2}";
         Match dateMatch = Regex.Match(logLine, datePattern);
         string date = dateMatch.Value;
+        Debug.Log(date);
 
         return date;
 
@@ -136,7 +137,7 @@ public class EventProcessor
         else   
         {
 
-            Debug.Log(IPvalue);
+            //Debug.Log(IPvalue);
             return IPvalue;
 
         }

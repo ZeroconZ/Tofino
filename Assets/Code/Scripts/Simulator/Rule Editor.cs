@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using TMPro;
@@ -61,8 +62,8 @@ public class RE : MonoBehaviour
         Devices.Add(2, "PLC");
         Devices.Add(3, "DRIVER");
 
-        Proto.Add(0, "MODBUS");
-        Proto.Add(1, "ICMP");
+        Proto.Add(0, "ICMP");
+        Proto.Add(1, "MODBUS");
         Proto.Add(2, "ENF. READ");
         Proto.Add(3, "ENF. R/W");   
         Proto.Add(4, "ENF. PROG/OFS");
@@ -73,13 +74,13 @@ public class RE : MonoBehaviour
         Proto.Add(9, "ENF. FUNC. 5");
         Proto.Add(10, "ENF. FUNC. 6");
         Proto.Add(11, "ENF. FUNC. 7");
-        Proto.Add(19, "ENF. FUNC. 15");
-        Proto.Add(20, "ENF. FUNC. 16");
-        Proto.Add(24, "ENF. FUNC. 20");
-        Proto.Add(25, "ENF. FUNC. 21");
-        Proto.Add(27, "ENF. FUNC. 23");
-        Proto.Add(28, "ENF. FUNC. 24");
-        Proto.Add(47, "ENF. FUNC. 43");
+        Proto.Add(12, "ENF. FUNC. 15");
+        Proto.Add(13, "ENF. FUNC. 16");
+        Proto.Add(14, "ENF. FUNC. 20");
+        Proto.Add(15, "ENF. FUNC. 21");
+        Proto.Add(16, "ENF. FUNC. 23");
+        Proto.Add(17, "ENF. FUNC. 24");
+        Proto.Add(18, "ENF. FUNC. 43");
 
         CCM.instance.HideArrow();
 
@@ -111,7 +112,6 @@ public class RE : MonoBehaviour
         {
             
             proto = val;
-            Debug.Log("Proto");
 
         }    
         else
@@ -127,9 +127,6 @@ public class RE : MonoBehaviour
 
             proto = val + 2; 
             block = 0;
-
-            /*if(val <= 5)
-                ShowAdvanced();*/
 
         }
 
@@ -166,7 +163,7 @@ public class RE : MonoBehaviour
         if(src == dst)
         {
 
-            Debug.Log("Source and Destiny cannot be the same");
+            return;
 
         }
         else
@@ -178,7 +175,7 @@ public class RE : MonoBehaviour
                 if(Rules.ContainsValue((src, dst, proto, 1)) || Rules.ContainsValue((src, dst, proto, 0))  && proto < 2)
                 {
                     
-                    Debug.Log("Repe");
+                    return;
 
                 }
                 else
@@ -187,7 +184,6 @@ public class RE : MonoBehaviour
                     id++;
 
                     Rules.Add(id, (src, dst, proto, block));
-                    Debug.Log("Rule: " + id + " " + Rules[id]);
                     AddToDropDown(TextDisplayRule(id, (src, dst, proto, block)));
                 
                 }
@@ -197,12 +193,14 @@ public class RE : MonoBehaviour
             {
 
                 Rules[ruleDisplayIndex] = (src, dst, proto, block);
-                Debug.Log("Edited rule " + ruleDisplayIndex + " " + Rules[ruleDisplayIndex]);
+                //Debug.Log("Edited rule " + ruleDisplayIndex + " " + Rules[ruleDisplayIndex]);
                 ReplaceRule(ruleDisplayIndex, TextDisplayRule(ruleDisplayIndex, (src, dst, proto, block)));
 
             }
 
         }
+
+        Debug.Log(Rules[id]);
 
         return;
 
@@ -272,36 +270,126 @@ public class RE : MonoBehaviour
 
 
     //Check if the rule exists
-    public bool CheckRule((int srcMsg, int dstMsg, int protoMsg) msg)
+    public int CheckRule((int srcMsg, int dstMsg, int protoMsg) msg)
     {
-
         int key = -1;
+        int keyMdBACLBlock = 100;
+        int keyMdBACLPass = 100;
+        int keyEnf = 100;
+
         foreach (var keyI in Rules)
         {
             var value = keyI.Value;
 
-            if (value.srcR == msg.srcMsg && value.dstR == msg.dstMsg && value.protoR == msg.protoMsg)
+            if(value.srcR == msg.srcMsg && value.dstR == msg.dstMsg && value.protoR == msg.protoMsg) //Busca la key del mensaje
             {
                 key = keyI.Key;
-                break;
+            }
+
+            if(Rules.TryGetValue(keyI.Key, out var modbusPass) && modbusPass == (msg.srcMsg, msg.dstMsg, 1, 0)) //Busca la key de un ACL que permita el tráfico para ese src y dst
+            {
+
+                keyMdBACLPass = keyI.Key;
+
+            }
+
+            if(Rules.TryGetValue(keyI.Key, out var modbusBlock) && modbusBlock == (msg.srcMsg, msg.dstMsg, 1, 1)) //Busca la key de un ACL MODBUS que bloquee el tráfico para ese src y dst
+            {
+                keyMdBACLBlock = keyI.Key;
+                //Debug.Log("La id de modbus es: " + keyMdBACL);
+            }
+
+            if(value.srcR == msg.srcMsg && value.dstR == msg.dstMsg && value.protoR > 1) //Busca la key de un enforcer para cualquier funcion entre ese src y dst
+            {
+
+                keyEnf = keyI.Key;
+
             }
 
         }
 
-        if (key != -1 && Rules.TryGetValue(key, out var rule))
+        int isBlock;
+
+        if(Rules.TryGetValue(key, out var rule))
+        {
+            
+            isBlock = rule.blockR;
+            
+        }
+        else
+            isBlock = 1;
+
+        //Debug.Log(isBlock);
+
+        if(isBlock == 1 && msg.protoMsg < 1)
         {
 
-            int isBlock = rule.blockR;
-            
-            if(isBlock == 1)
-                return true;
-            else    
-                return false;
+            Debug.Log("Petición bloqueada");
+            return 1;
+
+        }
+        else if(msg.protoMsg > 1)
+        {
+
+            if(keyMdBACLBlock < keyEnf && keyEnf != 100) //Si hay un ACL que bloqua antes
+            {
+
+                Debug.Log("Habia un ACL antes");
+                return 1;
+
+            }
+            else if(Rules.ContainsValue((msg.srcMsg, msg.dstMsg, msg.protoMsg, 0))) //Si no hay un ACL previo y está contemplada la regla
+            {
+
+                Debug.Log("Funcion permitida");
+                return -2;
+
+            }
+            else if(keyEnf != 100 && keyEnf < keyMdBACLBlock && keyEnf != 100) //Si hay  un enforcer que no contempla la regla antes del ACL
+            {
+
+                Debug.Log("Funcion bloqueada por un enforcer");
+                return -1;
+
+            }
+            else if(Rules.ContainsValue((msg.srcMsg, msg.dstMsg, 1, 0)) && keyMdBACLPass < keyEnf) //Si hay un ACL que permita el tráfico y está antes de un enforcer 
+            {
+
+                Debug.Log("Funcion permitida por un ACL");
+                return 0;
+
+            }
+            else if(Rules.ContainsValue((msg.srcMsg, msg.dstMsg, 1, 0)))
+            {
+
+                Debug.Log("Funcion permitida por ausencia de enforcer y un ACL PASS");
+                return 0;
+
+            }
+            else
+            {
+
+                Debug.Log("No existe esa regla");
+                return 1;
+
+            }
+
+        }
+        else if(isBlock == 0)
+        {
+
+            Debug.Log("Regla permitida");
+            return 0;
 
         }
         else
-            return true;
- 
+        {
+
+            Debug.Log("No existe esa regla");
+            return 1;
+
+        }
+
     }
 
     //Toggle arrows to move up or down the rules in the hierarchy
@@ -336,6 +424,7 @@ public class RE : MonoBehaviour
         
         if(Arrows == true)
         {
+
             var valueToMove = Rules[ruleDisplayIndex];
             var ValueDisplaced = Rules[ruleDisplayIndex - 1];
 
@@ -347,6 +436,7 @@ public class RE : MonoBehaviour
             Rules[ruleDisplayIndex] = ValueDisplaced;
             ReplaceRule(ruleDisplayIndex -1 ,ruleUp);
             ReplaceRule(ruleDisplayIndex, ruleDown);
+
         }
         else
         {
@@ -382,16 +472,6 @@ public class RE : MonoBehaviour
             return;
 
         }
-
-    }
-
-    //Showing the advanced enforcer options
-
-    public TMP_Dropdown Enforcer;
-    public void ShowAdvanced()
-    {
-
-        Enforcer.options[5] = new TMP_Dropdown.OptionData("Function 1: Read Coils");
 
     }
 

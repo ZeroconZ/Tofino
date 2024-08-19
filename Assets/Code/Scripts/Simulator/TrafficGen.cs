@@ -5,20 +5,36 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using System.Text;
+using Unity.VisualScripting;
 
 public class TrafficGen : MonoBehaviour
 {
+
+    public static TrafficGen instance;
 
     int id;
     int src;
     int dst;
     int proto;
     bool TSAMode;
+    bool ModbusAdv = false;
 
     StringBuilder Event = new StringBuilder();
     EventProcessor logProcessor = new EventProcessor();
 
     Dictionary<int, string> IPs = new Dictionary<int, string>();
+
+    void Awake()
+    {
+
+        if(TrafficGen.instance == null)
+            TrafficGen.instance = this;
+
+        else 
+            DestroyImmediate(gameObject);
+
+    }   
+
 
     void Start()
     {
@@ -28,6 +44,7 @@ public class TrafficGen : MonoBehaviour
         IPs.Add(2, "10.1.1.10");
         IPs.Add(3, "10.1.1.12");
 
+        MMO.instance.newMode("TEST");
         CCM.instance.HideArrow();
 
     }
@@ -49,7 +66,24 @@ public class TrafficGen : MonoBehaviour
     public void ProtoMsg(int val)
     {
 
-        proto = val;
+        if(!ModbusAdv)
+            proto = val;
+
+    }
+
+    public void AdvModbus(int val)
+    {
+
+        if(ModbusAdv)
+            proto = val + 4;
+
+    }
+
+    public void ShowAdvModbus(bool state)
+    {
+
+        ModbusAdv = state;
+        proto = 1;
 
     }
 
@@ -67,31 +101,51 @@ public class TrafficGen : MonoBehaviour
     {
 
         var msg = (src, dst, proto);
-        print("TE LLAMO");
-        if(src != dst)
-        {
+        Debug.Log(msg);
 
-            if(RE.instance.CheckRule(msg))
+            if(src != dst)
             {
 
-                CreateMsg();
+                int id = RE.instance.CheckRule(msg);
 
-                if(TSAMode)
-                    CCM.instance.newEvent(Event.ToString());
+                CreateMsgDenied(id);
+                MMO.instance.newMode(Event.ToString());
+
+                if(id == -2)
+                {
+
+                    if(TSAMode)
+                        CCM.instance.newEvent(Event.ToString());
+
+                    else
+                        return;
+
+                }
                 else
-                    CCM.instance.allGreen();
+                {
 
-                remitter(Event.ToString());
+                    if(TSAMode)
+                        CCM.instance.newEvent(Event.ToString());
 
-            }
+                    else
+                    {
+
+                        CCM.instance.allGreen();
+                        CCM.instance.HideArrow();
+
+                    }
+                    
+                    remitter(Event.ToString());
+
+                }
                 
-        }
-        else    
-            return;
+            }
+            else    
+                return;
 
     }
 
-    private void CreateMsg()
+    private void CreateMsgDenied(int id)
     {
 
         string LSM = string.Empty;
@@ -110,29 +164,68 @@ public class TrafficGen : MonoBehaviour
         string logDate = now.ToString("MMM dd HH:mm:ss", CultureInfo.CreateSpecificCulture("en-US"));
 
         //Assigning the info
-        if(proto == 0)
+        if(proto < 1)
         {
 
-            LSM = "Tofino Firewall: ACL Violation|";
-            msg = "msg=ACL violated due to incorrect network address(es), protocol, ports, rate limit and/or state ";
-            dpt_proto = "dpt=502 proto=IPv4/TCP";
-            
+            if(id == 0)
+            {
+
+                LSM = "Tofino Firewall: Logged Connection|";
+                msg = "msg=Packet allowed and logged as specified in the ACL ";
+                dpt_proto = "dpt=0 proto=IPv4/ICMP";
+
+            }
+            else if(id == 1)
+            {
+
+                LSM = "Tofino Firewall: ACL Violation|";
+                msg = "msg=ACL violated due to incorrect network address(es), protocol, ports, rate limit and/or state ";
+                dpt_proto = "dpt=0 proto=IPv4/ICMP";
+
+            }
+
         }
-        else if(proto == 1)
+        else if(proto > 1)
         {
 
-            LSM = "Tofino Firewall: ACL Violation|";
-            msg = "msg=ACL violated due to incorrect network address(es), protocol, ports, rate limit and/or state ";
-            dpt_proto = "dpt=0 proto=IPv4/ICMP";
+            if(id == -2)
+            {
+
+                msg = "msg=Packet allowed and logged as specified in the ACL ";
+
+            }
+            else if(id == -1)
+            {
+
+                LSM = "Tofino Modbus/TCP Enforcer: Function Code List Check|";
+                msg = $"msg=Function code {proto - 4} is not in permitted function code list ";
+                dpt_proto = "dpt=502 proto=IPv4/TCP";
+
+            }
+            else if(id == 0)
+            {
+
+                LSM = "Tofino Firewall: Logged Connection|";
+                msg = "msg=Packet allowed and logged as specified in the ACL ";
+                dpt_proto = "dpt=502 proto=IPv4/TCP";
+
+            }
+            else if(id == 1)
+            {
+
+                LSM = "Tofino Firewall: ACL Violation|";
+                msg = "msg=ACL violated due to incorrect network address(es), protocol, ports, rate limit and/or state ";
+                dpt_proto = "dpt=502 proto=IPv4/TCP";
+
+            }
 
         }
-        
+
         if(!TSAMode)
             TSAModeS = "TofinoMode=TEST ";
         else
             TSAModeS = "TofinoMode=OPERATIONAL ";
             
-
         srcIP = "src=" + srcS;
         dstIP = "dst=" + dstS; 
         
