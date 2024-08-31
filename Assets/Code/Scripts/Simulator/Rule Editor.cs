@@ -290,19 +290,21 @@ public class RE : MonoBehaviour
             {
 
                 keyMdBACLPass = keyI.Key;
+                Debug.Log("La id de modbus pass es: " + keyMdBACLPass);
 
             }
 
             if(Rules.TryGetValue(keyI.Key, out var modbusBlock) && modbusBlock == (msg.srcMsg, msg.dstMsg, 1, 1)) //Busca la key de un ACL MODBUS que bloquee el tráfico para ese src y dst
             {
                 keyMdBACLBlock = keyI.Key;
-                //Debug.Log("La id de modbus es: " + keyMdBACL);
+                Debug.Log("La id de modbus es: " + keyMdBACLBlock);
             }
 
             if(value.srcR == msg.srcMsg && value.dstR == msg.dstMsg && value.protoR > 1) //Busca la key de un enforcer para cualquier funcion entre ese src y dst
             {
 
                 keyEnf = keyI.Key;
+                Debug.Log("La id del enforcer es: " + keyEnf);
 
             }
 
@@ -345,7 +347,7 @@ public class RE : MonoBehaviour
                 return -2;
 
             }
-            else if(keyEnf != 100 && keyEnf < keyMdBACLBlock && keyEnf != 100) //Si hay  un enforcer que no contempla la regla antes del ACL
+            else if(keyEnf != 100 && keyEnf < keyMdBACLBlock && keyEnf < keyMdBACLPass) //Si hay  un enforcer que no contempla la regla antes del ACL
             {
 
                 Debug.Log("Funcion bloqueada por un enforcer");
