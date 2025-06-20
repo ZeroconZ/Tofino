@@ -18,8 +18,8 @@ public class logReader : MonoBehaviour
     List<string> events = new List<string>();
 
 
-    string username = "dtuser";
-    string password = "TofinoDT_2024";
+    string username = "";
+    string password = "";
 
     string lastLineDate;
     string oldLine = string.Empty;
@@ -58,7 +58,7 @@ public class logReader : MonoBehaviour
     private IEnumerator APIRequest()
     {
 
-        UnityWebRequest webReader = UnityWebRequest.Get("https://aulaschneider.unileon.es/api/data/armario7/tofino-all");
+        UnityWebRequest webReader = UnityWebRequest.Get();
 
         string auth = username + ":" + password;
         string authHeaderValue = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(auth));
